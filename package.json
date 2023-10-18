@@ -19,7 +19,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "codegen:gsquid-main-query": "graphql-codegen --require dotenv/config --config codegenConfig/codegen-gsquid-main-query.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.7.2",
@@ -46,7 +47,9 @@
     "class-validator": "^0.14.0",
     "dotenv": "^16.1.4",
     "graphql": "^16.6.0",
+    "graphql-request": "^6.1.0",
     "graphql-scalars": "^1.22.2",
+    "graphql-tag": "^2.12.6",
     "graphql-type-json": "^0.3.2",
     "json-bigint-patch": "^0.0.8",
     "pg": "^8.11.0",
@@ -61,6 +64,11 @@
     "string-width": "4.1.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-document-nodes": "^4.0.1",
+    "@graphql-codegen/typescript-operations": "^4.0.1",
     "@nestjs/cli": "^9.5.0",
     "@nestjs/schematics": "^9.2.0",
     "@nestjs/testing": "^9.4.2",

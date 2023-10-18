@@ -1,9 +1,33 @@
 import { registerEnumType } from '@nestjs/graphql';
+import {
+  BlockchainName,
+  FindAccountTxHistoryOrderBy,
+  NativeTransactionKind,
+  QueryOrder,
+  TransactionKind,
+  VoteResult,
+} from '../../constants/common';
 
-export enum DataType {
-  test = 'test',
-}
+registerEnumType(QueryOrder, {
+  name: 'QueryOrder',
+});
 
-registerEnumType(DataType, {
-  name: 'DataType',
+registerEnumType(FindAccountTxHistoryOrderBy, {
+  name: 'FindAccountTxHistoryOrderBy',
+});
+
+registerEnumType(VoteResult, {
+  name: 'VoteResult',
+});
+
+registerEnumType(TransactionKind, {
+  name: 'TransactionKind',
+});
+
+registerEnumType(NativeTransactionKind, {
+  name: 'NativeTransactionKind',
+});
+
+registerEnumType(BlockchainName, {
+  name: 'BlockchainName',
 });
