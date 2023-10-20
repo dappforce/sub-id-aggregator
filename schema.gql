@@ -1,0 +1,111 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Blockchain {
+  id: String!
+  name: String!
+  tag: BlockchainName!
+  code: String!
+  decimal: Int!
+  icon: String!
+}
+
+enum BlockchainName {
+  POLKADOT
+  KUSAMA
+  MOONBEAM
+  MOONRIVER
+  ASTAR
+}
+
+type TransferNative {
+  id: String!
+  blockNumber: Int!
+  extrinsicHash: String!
+  timestamp: DateTime!
+  amount: BigInt!
+  success: Boolean!
+  from: Account!
+  to: Account!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
+type VoteNative {
+  id: String!
+}
+
+type Transaction {
+  id: String!
+  txKind: TransactionKind!
+  transferNative: TransferNative
+  voteNative: VoteNative
+  rewardNative: VoteNative
+}
+
+enum TransactionKind {
+  TRANSFER_TO
+  TRANSFER_FROM
+  VOTE
+  REWARD
+}
+
+type AccountTransaction {
+  id: String!
+  voteResult: VoteResult
+  txKind: TransactionKind
+  account: Account!
+  blockchainTag: BlockchainName!
+  amount: BigInt!
+  senderOrTargetPublicKey: String
+  blockchain: Blockchain!
+  timestamp: DateTime!
+  success: Boolean!
+  transaction: Transaction!
+}
+
+enum VoteResult {
+  AYE
+  NAY
+}
+
+type Account {
+  id: String!
+  transactions: [AccountTransaction!]!
+  latestProcessedBlock: JSON
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Query {
+  findAccountTxHistory(where: FindAccountTxHistoryArgs!): String!
+}
+
+input FindAccountTxHistoryArgs {
+  publicKey: String!
+  offset: Int = 0
+  pageSize: Int = 30
+  orderBy: FindAccountTxHistoryOrderBy = timestamp
+  orderDirection: QueryOrder = DESC
+}
+
+enum FindAccountTxHistoryOrderBy {
+  timestamp
+}
+
+enum QueryOrder {
+  DESC
+  ASC
+}

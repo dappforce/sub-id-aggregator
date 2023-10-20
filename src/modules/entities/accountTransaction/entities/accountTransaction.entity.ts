@@ -24,7 +24,7 @@ import crypto from 'node:crypto';
 @ObjectType()
 @Index([
   'txKind',
-  'blockchainName',
+  'blockchainTag',
   'senderOrTargetPublicKey',
   'timestamp',
   'success',

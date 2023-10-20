@@ -31,7 +31,7 @@ export class AppConfig {
   @IsNotEmpty()
   readonly AGGREGATOR_REDIS_PORT: string;
   @IsNotEmpty()
-  readonly REDIS_QUEUE_PASSWORD: string;
+  readonly AGGREGATOR_REDIS_PASSWORD: string;
 
   @IsNotEmpty()
   readonly DATA_SOURCE_GSQUID_MAIN_POLKADOT: string;
@@ -47,6 +47,9 @@ export class AppConfig {
 
   @IsNotEmpty()
   readonly DATA_SOURCE_GSQUID_MAIN_ASTAR: string;
+
+  @IsNotEmpty()
+  readonly NODE_ENV: string;
 }
 
 @Global()

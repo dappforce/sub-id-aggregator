@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Account } from './entities/voteNative.entity';
+import { VoteNative } from './entities/voteNative.entity';
 import { VoteNativeService } from './voteNative.service';
-import {DependencyServiceModule} from "../../../dependencyServiceModule.module";
+import { DependencyServiceModule } from '../../../dependencyServiceModule.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Account]), DependencyServiceModule],
+  imports: [TypeOrmModule.forFeature([VoteNative]), DependencyServiceModule],
   providers: [VoteNativeService],
   exports: [VoteNativeService],
 })

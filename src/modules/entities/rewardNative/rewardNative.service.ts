@@ -1,30 +1,29 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Account } from './entities/rewardNative.entity';
+import { RewardNative } from './entities/rewardNative.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class RewardNativeService {
   constructor(
-    @InjectRepository(Account)
-    public readonly accountRepository: Repository<Account>,
+    @InjectRepository(RewardNative)
+    public readonly rewardRepository: Repository<RewardNative>,
   ) {}
 
-  async getOrCreateAccount(accountId: string): Promise<Account> {
-    if (accountId === null || !accountId)
-      throw new Error(`Account ID has unsupported value`);
+  async getRewardNative(id: string): Promise<RewardNative> {
+    if (id === null || !id) throw new Error(`Reward ID has unsupported value`);
 
-    let account = await this.accountRepository.findOne({
-      where: { id: accountId },
+    return this.rewardRepository.findOne({
+      where: { id },
     });
 
-    if (account) return account;
-
-    account = new Account();
-    account.id = accountId;
-
-    await this.accountRepository.save(account);
-
-    return account;
+    // if (account) return account;
+    //
+    // account = new Account();
+    // account.id = accountId;
+    //
+    // await this.accountRepository.save(account);
+    //
+    // return account;
   }
 }

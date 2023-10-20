@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { AccountTransaction } from '../../../../dataAggregator/entities/accountTransaction.entity';
+import { AccountTransaction } from '../../../../entities/accountTransaction/entities/accountTransaction.entity';
 
 @ObjectType()
 export class FindTransactionsHistoryResponseDto {

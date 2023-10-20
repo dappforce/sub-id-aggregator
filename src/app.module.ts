@@ -2,78 +2,49 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
-import { ApolloDriverConfig, ApolloDriver } from '@nestjs/apollo';
+import { ApolloDriverConfig } from '@nestjs/apollo';
 import { DependencyServiceModule } from './dependencyServiceModule.module';
 import './common/entities/enums';
-import { AppConfig, EnvModule } from './config.module';
-import GraphQLJSON from 'graphql-type-json';
+import { EnvModule } from './config.module';
 import { BullModule } from '@nestjs/bull';
 import { QueueProcessorModule } from './modules/queueProcessor/queueProcessor.module';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { DataAggregatorModule } from './modules/dataAggregator/dataAggregator.module';
 import { ApiGatewayModule } from './modules/apiGateway/apiGateway.module';
-import { GraphQLBigInt } from 'graphql-scalars';
+import { AccountModule } from './modules/entities/account/account.module';
+import { AccountTransactionModule } from './modules/entities/accountTransaction/accountTransaction.module';
+import { BlockchainModule } from './modules/entities/blockchain/blockchain.module';
+import { RewardNativeModule } from './modules/entities/rewardNative/rewardNative.module';
+import { TransactionModule } from './modules/entities/transaction/transaction.module';
+import { TransferNativeModule } from './modules/entities/transferNative/transferNative.module';
+import { VoteNativeModule } from './modules/entities/voteNative/voteNative.module';
+import config from './modulesConfig';
 
 dotenv.config();
 
 @Module({
   imports: [
     EnvModule,
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      autoSchemaFile: './schema.gql',
-      path: '/graphql',
-      playground: true,
-      driver: ApolloDriver,
-      resolvers: { BigInt: GraphQLBigInt },
-      // resolvers: { JSON: GraphQLJSON },
-    }),
-    BullModule.forRootAsync({
-      inject: [AppConfig],
-      useFactory: (config: AppConfig) => ({
-        redis: {
-          host: config.AGGREGATOR_REDIS_HOST,
-          port: +config.AGGREGATOR_REDIS_PORT,
-          password: config.REDIS_QUEUE_PASSWORD,
-        },
-        prefix: config.AGGREGATOR_REDIS_PREFIX,
-        // https://github.com/OptimalBits/bull/blob/develop/REFERENCE.md#queue
-        settings: {
-          lockDuration: 20000, // Check for stalled jobs each 2 min
-          lockRenewTime: 10000,
-          stalledInterval: 2000,
-          maxStalledCount: 100,
-        },
-      }),
-    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>(config.graphqlModuleForRoot),
+    BullModule.forRootAsync(config.bullModuleForRoot),
     // https://til.selleo.com/posts/826-bull-board-for-nestjs
     BullBoardModule.forRoot({
       route: '/queues',
       adapter: ExpressAdapter,
     }),
-
-    TypeOrmModule.forRootAsync({
-      inject: [AppConfig],
-      useFactory: (config: AppConfig) => {
-        return {
-          keepConnectionAlive: true,
-          type: 'postgres',
-          host: config.AGGREGATOR_DB_HOST,
-          port: +config.AGGREGATOR_DB_PORT,
-          username: config.AGGREGATOR_DB_USERNAME,
-          password: config.AGGREGATOR_DB_PASSWORD,
-          database: config.AGGREGATOR_DB_DATABASE,
-          autoLoadEntities: true,
-          synchronize: true,
-          entities: [],
-        };
-      },
-    }),
-
+    TypeOrmModule.forRootAsync(config.typeOrmModuleForRoot),
     DependencyServiceModule,
     QueueProcessorModule,
     ApiGatewayModule,
     DataAggregatorModule,
+    AccountModule,
+    AccountTransactionModule,
+    BlockchainModule,
+    RewardNativeModule,
+    TransactionModule,
+    TransferNativeModule,
+    VoteNativeModule,
   ],
 })
 export class AppModule implements NestModule {

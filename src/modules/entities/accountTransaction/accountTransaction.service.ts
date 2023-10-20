@@ -26,7 +26,6 @@ export class AccountTransactionService {
   constructor(
     @InjectRepository(AccountTransaction)
     public readonly accountTransactionRepository: Repository<AccountTransaction>,
-    private accountService: AccountService,
   ) {}
 
 

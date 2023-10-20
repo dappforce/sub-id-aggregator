@@ -32,7 +32,7 @@ export class AccountService {
     let latestProcessedBlock: AccountLatestProcessedBlockMap | {} = {};
 
     for (const blockchainData of this.blockchainService.supportedBlockchains) {
-      latestProcessedBlock[blockchainData.name] = Object.fromEntries(
+      latestProcessedBlock[blockchainData.tag] = Object.fromEntries(
         Object.keys(blockchainData.events).map(
           // @ts-ignore
           (key: NativeTransactionKind) => [key, 0],
