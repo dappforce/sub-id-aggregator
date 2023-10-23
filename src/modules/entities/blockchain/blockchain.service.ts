@@ -3,61 +3,14 @@ import { Blockchain } from './entities/blockchain.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  BlockchainName,
-  NativeTransactionKind,
-} from '../../../constants/common';
-
-export const supportedBlockchains = [
-  {
-    tag: BlockchainName.POLKADOT,
-    events: {
-      [NativeTransactionKind.TRANSFER]:
-        'https://squid.subsquid.io/gs-main-polkadot/graphql',
-      [NativeTransactionKind.REWARD]:
-        'https://squid.subsquid.io/gs-main-polkadot/graphql',
-    },
-  },
-  {
-    tag: BlockchainName.KUSAMA,
-    events: {
-      [NativeTransactionKind.TRANSFER]:
-        'https://squid.subsquid.io/gs-main-kusama/graphql',
-      [NativeTransactionKind.REWARD]:
-        'https://squid.subsquid.io/gs-main-kusama/graphql',
-    },
-  },
-  {
-    tag: BlockchainName.MOONBEAM,
-    events: {
-      [NativeTransactionKind.TRANSFER]:
-        'https://squid.subsquid.io/gs-main-moonbeam/graphql',
-      [NativeTransactionKind.REWARD]:
-        'https://squid.subsquid.io/gs-main-moonbeam/graphql',
-    },
-  },
-  {
-    tag: BlockchainName.MOONRIVER,
-    events: {
-      [NativeTransactionKind.TRANSFER]:
-        'https://squid.subsquid.io/gs-main-moonriver/graphql',
-      [NativeTransactionKind.REWARD]:
-        'https://squid.subsquid.io/gs-main-moonriver/graphql',
-    },
-  },
-  {
-    tag: BlockchainName.ASTAR,
-    events: {
-      [NativeTransactionKind.TRANSFER]:
-        'https://squid.subsquid.io/gs-main-astar/graphql',
-      [NativeTransactionKind.REWARD]:
-        'https://squid.subsquid.io/gs-main-astar/graphql',
-    },
-  },
-] as const;
+  blockchainDataSourceConfigs,
+  BlockchainTag,
+  supportedBlockchainDetails,
+} from '../../../constants/blockchain';
 
 @Injectable()
 export class BlockchainService {
-  public readonly supportedBlockchains = supportedBlockchains;
+  public readonly blockchainDataSourceConfigs = blockchainDataSourceConfigs;
 
   constructor(
     @InjectRepository(Blockchain)
@@ -82,7 +35,35 @@ export class BlockchainService {
     return account;
   }
 
-  getByTag(tag: BlockchainName) {
+  async initSupportedBlockchains() {
+    const chainsToSave = [];
+    const existingBlockchainsMap = new Map<BlockchainTag, Blockchain>(
+      (
+        (await this.blockchainRepository.find({
+          where: {},
+        })) || []
+      ).map((chain) => [chain.tag, chain]),
+    );
+
+    for (const supportedChainData of supportedBlockchainDetails) {
+      let chainData = existingBlockchainsMap.get(supportedChainData.tag);
+
+      if (!chainData) chainData = new Blockchain();
+
+      chainData.tag = supportedChainData.tag;
+      chainData.info = supportedChainData.info;
+      chainData.text = supportedChainData.text;
+      chainData.logo = supportedChainData.logo;
+      chainData.decimal = supportedChainData.decimal;
+      chainData.color = supportedChainData.color;
+
+      chainsToSave.push(chainData);
+    }
+
+    await this.blockchainRepository.save(chainsToSave);
+  }
+
+  getByTag(tag: BlockchainTag) {
     return this.blockchainRepository.findOne({
       where: {
         tag,

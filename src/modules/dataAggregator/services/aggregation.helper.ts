@@ -5,6 +5,7 @@ import { CollectEventDataFromDataSourceInput } from '../../queueProcessor/dto/co
 import { DataSourceUtils } from '../../../utils/dataSourceUtils';
 import { TransferNativeService } from '../../entities/transferNative/transferNative.service';
 import {
+  GetTransfersByAccountQuery,
   Transfer as SquidTransfer,
   TransferDirection,
 } from '../../../utils/graphQl/gsquidMain/gsquid-main-query';
@@ -32,7 +33,7 @@ export class AggregationHelper {
   async collectTransferEventData(
     inputData: CollectEventDataFromDataSourceInput,
   ): Promise<CollectEventDataHandlerResponse> {
-    const responseBuffer: SquidTransfer[] = [];
+    const responseBuffer: GetTransfersByAccountQuery['transfers'] = [];
 
     const runQuery = async (offset: number = 0) => {
       const currentOffset = offset;
@@ -41,15 +42,15 @@ export class AggregationHelper {
         offset: currentOffset,
         publicKey: inputData.publicKey,
         blockNumber_gt: inputData.latestProcessedBlock,
+        queryUrl: inputData.sourceUrl,
       });
-      if (!resp || resp.length == 0) return;
-      responseBuffer.push(...resp);
+      if (resp.transfers.length === 0) return;
+      responseBuffer.push(...resp.transfers);
 
       await runQuery(currentOffset + pageSize);
     };
 
     const pageSize = 100;
-
     await runQuery();
 
     const nativeTransferBuffer = [];

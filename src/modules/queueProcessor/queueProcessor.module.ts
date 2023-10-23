@@ -13,11 +13,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountTransaction } from '../entities/accountTransaction/entities/accountTransaction.entity';
 import { Account } from '../entities/account/entities/account.entity';
 import { Blockchain } from '../entities/blockchain/entities/blockchain.entity';
+import { AccountAggregationFlowProducer } from './services/producers/accountAggregationFlow.producer';
+import { DatasourceHandlingConsumer } from './services/consumers/datasourceHandling.consumer';
+import { AggregationHelper } from '../dataAggregator/services/aggregation.helper';
+import { TransferNativeService } from '../entities/transferNative/transferNative.service';
+import { TransferNative } from '../entities/transferNative/entities/transferNative.entity';
+import { TransactionService } from '../entities/transaction/transaction.service';
+import { AccountTransactionService } from '../entities/accountTransaction/accountTransaction.service';
+import { Transaction } from '../entities/transaction/entities/transaction.entity';
 
 @Module({
   imports: [
     DependencyServiceModule,
-    TypeOrmModule.forFeature([Account, Blockchain]),
+    TypeOrmModule.forFeature([Account, Blockchain, TransferNative, Transaction, AccountTransaction]),
     BullModule.registerQueue(
       {
         name: SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW,
@@ -39,10 +47,16 @@ import { Blockchain } from '../entities/blockchain/entities/blockchain.entity';
   ],
   providers: [
     AccountAggregationFlowConsumer,
+    DatasourceHandlingConsumer,
     DatasourceHandlingProducer,
+    AccountAggregationFlowProducer,
     DataAggregatorService,
     BlockchainService,
     AccountService,
+    AggregationHelper,
+    TransferNativeService,
+    TransactionService,
+    AccountTransactionService,
   ],
   exports: [AccountAggregationFlowConsumer, DatasourceHandlingProducer],
 })

@@ -62,8 +62,8 @@ export default {
       settings: {
         lockDuration: 20000, // Check for stalled jobs each 2 min
         lockRenewTime: 10000,
-        stalledInterval: 2000,
-        maxStalledCount: 100
+        stalledInterval: 20000,
+        maxStalledCount: 1
       }
     };
   }

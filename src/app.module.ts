@@ -20,6 +20,7 @@ import { TransactionModule } from './modules/entities/transaction/transaction.mo
 import { TransferNativeModule } from './modules/entities/transferNative/transferNative.module';
 import { VoteNativeModule } from './modules/entities/voteNative/voteNative.module';
 import config from './modulesConfig';
+import { PlatformBootstrapperModule } from './platformBootstrapper/platformBootstrapper.module';
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ dotenv.config();
     TransactionModule,
     TransferNativeModule,
     VoteNativeModule,
+    PlatformBootstrapperModule
   ],
 })
 export class AppModule implements NestModule {

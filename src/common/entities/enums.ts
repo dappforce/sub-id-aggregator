@@ -1,12 +1,12 @@
 import { registerEnumType } from '@nestjs/graphql';
 import {
-  BlockchainName,
   FindAccountTxHistoryOrderBy,
   NativeTransactionKind,
   QueryOrder,
   TransactionKind,
   VoteResult,
 } from '../../constants/common';
+import { BlockchainTag } from '../../constants/blockchain';
 
 registerEnumType(QueryOrder, {
   name: 'QueryOrder',
@@ -28,6 +28,6 @@ registerEnumType(NativeTransactionKind, {
   name: 'NativeTransactionKind',
 });
 
-registerEnumType(BlockchainName, {
-  name: 'BlockchainName',
+registerEnumType(BlockchainTag, {
+  name: 'BlockchainTag',
 });

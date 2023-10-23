@@ -3,12 +3,12 @@ import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { AccountTransaction } from '../../accountTransaction/entities/accountTransaction.entity';
 import GraphQLJSON from 'graphql-type-json';
 import {
-  BlockchainName,
   NativeTransactionKind,
 } from '../../../../constants/common';
+import { BlockchainTag } from '../../../../constants/blockchain';
 
 export type AccountLatestProcessedBlockMap = Record<
-  BlockchainName,
+  BlockchainTag,
   Record<NativeTransactionKind, number>
 >;
 

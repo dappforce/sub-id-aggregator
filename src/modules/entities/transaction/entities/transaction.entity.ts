@@ -1,5 +1,14 @@
 import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { AccountTransaction } from '../../accountTransaction/entities/accountTransaction.entity';
 import { TransactionKind } from '../../../../constants/common';
 import { TransferNative } from '../../transferNative/entities/transferNative.entity';
@@ -23,19 +32,25 @@ export class Transaction {
     type: 'enum',
     enum: TransactionKind,
     nullable: false,
+    name: 'tx_kind',
   })
   @Field(() => TransactionKind, { nullable: false })
   txKind: TransactionKind;
 
-  @OneToOne(() => TransferNative, (transfer) => transfer.id, { nullable: true })
+  @ManyToOne(() => TransferNative, (transfer) => transfer.id, {
+    nullable: true,
+  })
   @Field(() => TransferNative, { nullable: true })
+  @JoinColumn({ name: 'transfer_native_id' })
   transferNative?: TransferNative;
 
-  @OneToOne(() => VoteNative, (vote) => vote.id, { nullable: true })
+  @ManyToOne(() => VoteNative, (vote) => vote.id, { nullable: true })
   @Field(() => VoteNative, { nullable: true })
+  @JoinColumn({ name: 'vote_native_id' })
   voteNative?: VoteNative;
 
-  @OneToOne(() => VoteNative, (vote) => vote.id, { nullable: true })
+  @ManyToOne(() => VoteNative, (vote) => vote.id, { nullable: true })
   @Field(() => VoteNative, { nullable: true })
+  @JoinColumn({ name: 'reward_native_id' })
   rewardNative?: RewardNative;
 }

@@ -4,14 +4,15 @@
 
 type Blockchain {
   id: String!
-  name: String!
-  tag: BlockchainName!
-  code: String!
+  text: String!
+  info: String!
+  tag: BlockchainTag!
   decimal: Int!
-  icon: String!
+  logo: String!
+  color: String!
 }
 
-enum BlockchainName {
+enum BlockchainTag {
   POLKADOT
   KUSAMA
   MOONBEAM
@@ -64,7 +65,7 @@ type AccountTransaction {
   voteResult: VoteResult
   txKind: TransactionKind
   account: Account!
-  blockchainTag: BlockchainName!
+  blockchainTag: BlockchainTag!
   amount: BigInt!
   senderOrTargetPublicKey: String
   blockchain: Blockchain!
@@ -90,7 +91,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 scalar JSON
 
 type Query {
-  findAccountTxHistory(where: FindAccountTxHistoryArgs!): String!
+  accountTxHistory(where: FindAccountTxHistoryArgs!): String!
 }
 
 input FindAccountTxHistoryArgs {
@@ -108,4 +109,12 @@ enum FindAccountTxHistoryOrderBy {
 enum QueryOrder {
   DESC
   ASC
+}
+
+type Mutation {
+  refreshAccountTxHistory(args: EnqueueAccountAggregationJobInput!): String!
+}
+
+input EnqueueAccountAggregationJobInput {
+  publicKey: String!
 }

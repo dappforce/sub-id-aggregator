@@ -23,15 +23,15 @@ export class TransferNative {
   @Field(() => String)
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, name: 'block_number' })
   @Field(() => Int, { nullable: false })
   blockNumber: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, name: 'extrinsic_hash' })
   @Field(() => String, { nullable: false })
   extrinsicHash: string;
 
-  @Column({ type: 'time with time zone', nullable: false })
+  @Column({ type: 'timestamp with time zone', nullable: false })
   @Field(() => Date, { nullable: false })
   timestamp: Date;
 

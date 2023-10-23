@@ -28,6 +28,7 @@ export default {
       poolErrorHandler: (e) => {
         console.log('PG pool Error ', e);
       },
+      logNotifications: true,
       keepConnectionAlive: true,
       type: 'postgres',
       host: config.AGGREGATOR_DB_HOST,

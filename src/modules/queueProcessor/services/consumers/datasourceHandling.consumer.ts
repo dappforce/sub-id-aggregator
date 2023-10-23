@@ -28,7 +28,7 @@ export class DatasourceHandlingConsumer {
       );
 
       await job.releaseLock();
-      await job.moveToCompleted(JSON.stringify(result));
+      await job.moveToCompleted(JSON.stringify(result), true);
     } catch (e) {
       await job.releaseLock();
       await job.moveToFailed({

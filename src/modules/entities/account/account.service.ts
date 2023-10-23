@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BlockchainService } from '../blockchain/blockchain.service';
 import {
-  BlockchainName,
   NativeTransactionKind,
 } from '../../../constants/common';
 
@@ -31,7 +30,7 @@ export class AccountService {
 
     let latestProcessedBlock: AccountLatestProcessedBlockMap | {} = {};
 
-    for (const blockchainData of this.blockchainService.supportedBlockchains) {
+    for (const blockchainData of this.blockchainService.blockchainDataSourceConfigs) {
       latestProcessedBlock[blockchainData.tag] = Object.fromEntries(
         Object.keys(blockchainData.events).map(
           // @ts-ignore

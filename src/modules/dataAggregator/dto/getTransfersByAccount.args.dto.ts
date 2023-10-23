@@ -3,4 +3,5 @@ export class GetTransfersByAccountArgs {
   offset: number;
   blockNumber_gt: number;
   publicKey: string;
+  queryUrl: string;
 }

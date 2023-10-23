@@ -17,6 +17,7 @@ export class DataAggregatorService {
   async handleRefreshAccountTransactionsHistory(
     data: RefreshAccountTxHistoryJobDataDto,
   ) {
+    console.log('handleRefreshAccountTransactionsHistory - ', data);
     // TODO add management of top level request from client
     // TODO add publicKey decoration
 
@@ -25,7 +26,7 @@ export class DataAggregatorService {
     );
 
     const aggregationResultByChain = await Promise.allSettled(
-      this.blockchainService.supportedBlockchains
+      this.blockchainService.blockchainDataSourceConfigs
         .map((chainData) => {
           const chainEvents: CollectEventDataFromDataSourceInput[] = [];
           for (const eventName in chainData.events) {
@@ -34,7 +35,8 @@ export class DataAggregatorService {
               publicKey: data.publicKey,
               blockchainTag: chainData.tag,
               sourceUrl: chainData.events[eventName],
-              latestProcessedBlock: account.latestProcessedBlock[chainData.tag][eventName],
+              latestProcessedBlock:
+                account.latestProcessedBlock[chainData.tag][eventName],
             });
           }
           return chainEvents;

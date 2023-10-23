@@ -25,7 +25,7 @@ export class AccountAggregationFlowConsumer {
       );
 
       await job.releaseLock();
-      await job.moveToCompleted('done');
+      await job.moveToCompleted('done', true);
     } catch (e) {
       await job.releaseLock();
       await job.moveToFailed({

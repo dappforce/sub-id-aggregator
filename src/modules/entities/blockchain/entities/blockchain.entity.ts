@@ -1,31 +1,31 @@
 import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { AccountTransaction } from '../../accountTransaction/entities/accountTransaction.entity';
-import { BlockchainName, TransactionKind } from '../../../../constants/common';
+import { BlockchainTag } from '../../../../constants/blockchain';
+import * as crypto from 'node:crypto';
 
 @Entity()
 @ObjectType()
 export class Blockchain {
-  @PrimaryColumn()
+  @PrimaryColumn('uuid')
   @Field(() => String)
   id: string;
 
   @Column({ nullable: false })
   @Field(() => String, { nullable: false })
-  name: string;
-
-  @Column({
-    type: 'enum',
-    enum: BlockchainName,
-    nullable: false,
-    name: 'tag',
-  })
-  @Field(() => BlockchainName, { nullable: false })
-  tag: BlockchainName;
+  text: string;
 
   @Column({ nullable: false })
   @Field(() => String, { nullable: false })
-  code: string;
+  info: string;
+
+  @Column({
+    type: 'enum',
+    enum: BlockchainTag,
+    nullable: false,
+    name: 'tag',
+  })
+  @Field(() => BlockchainTag, { nullable: false })
+  tag: BlockchainTag;
 
   @Column({ nullable: false })
   @Field(() => Int, { nullable: false })
@@ -33,5 +33,13 @@ export class Blockchain {
 
   @Column({ nullable: false })
   @Field(() => String, { nullable: false })
-  icon: string;
+  logo: string;
+
+  @Column({ nullable: false })
+  @Field(() => String, { nullable: false })
+  color: string;
+
+  constructor() {
+    this.id = crypto.randomUUID();
+  }
 }

@@ -1,7 +1,8 @@
-import { BlockchainName, NativeTransactionKind } from '../../../constants/common';
+import { NativeTransactionKind } from '../../../constants/common';
+import { BlockchainTag } from '../../../constants/blockchain';
 
 export class CollectEventDataFromDataSourceInput {
-  blockchainTag: BlockchainName;
+  blockchainTag: BlockchainTag;
   event: NativeTransactionKind;
   publicKey: string;
   sourceUrl: string;

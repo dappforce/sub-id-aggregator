@@ -25,10 +25,4 @@ export enum NativeTransactionKind {
   REWARD = 'REWARD',
 }
 
-export enum BlockchainName {
-  POLKADOT = 'POLKADOT',
-  KUSAMA = 'KUSAMA',
-  MOONBEAM = 'MOONBEAM',
-  MOONRIVER = 'MOONRIVER',
-  ASTAR = 'ASTAR',
-}
+

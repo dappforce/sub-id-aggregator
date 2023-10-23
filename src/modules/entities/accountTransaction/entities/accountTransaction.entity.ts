@@ -3,6 +3,7 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryColumn,
@@ -11,7 +12,6 @@ import { GraphQLBigInt } from 'graphql-scalars';
 import 'json-bigint-patch';
 import { Account } from '../../account/entities/account.entity';
 import {
-  BlockchainName,
   TransactionKind,
   VoteResult,
 } from '../../../../constants/common';
@@ -19,6 +19,7 @@ import { Blockchain } from '../../blockchain/entities/blockchain.entity';
 import { TransferNative } from '../../transferNative/entities/transferNative.entity';
 import { Transaction } from '../../transaction/entities/transaction.entity';
 import crypto from 'node:crypto';
+import { BlockchainTag } from '../../../../constants/blockchain';
 
 @Entity()
 @ObjectType()
@@ -57,16 +58,17 @@ export class AccountTransaction {
   txKind?: TransactionKind;
 
   @ManyToOne(() => Account, (acc) => acc.transactions, { nullable: false })
+  @JoinColumn({ name: 'account_id' })
   @Field(() => Account, { nullable: false })
   account: Account;
 
   @Column({
     type: 'enum',
-    enum: BlockchainName,
+    enum: BlockchainTag,
     nullable: false,
     name: 'blockchain_tag',
   })
-  @Field(() => BlockchainName, { nullable: false })
+  @Field(() => BlockchainTag, { nullable: false })
   blockchainTag: string;
 
   @Column({ type: 'bigint', nullable: true })
@@ -80,10 +82,11 @@ export class AccountTransaction {
   @ManyToOne(() => Blockchain, (blockchain) => blockchain.id, {
     nullable: false,
   })
+  @JoinColumn({ name: 'blockchain_id' })
   @Field(() => Blockchain, { nullable: false })
   blockchain: Blockchain;
 
-  @Column({ type: 'time with time zone', nullable: false })
+  @Column({ type: 'timestamp with time zone', nullable: false })
   @Field(() => Date, { nullable: false })
   timestamp: Date;
 
@@ -92,6 +95,7 @@ export class AccountTransaction {
   success: boolean;
 
   @OneToOne(() => Transaction, (tx) => tx.id, { nullable: false })
+  @JoinColumn({ name: 'transaction_id' })
   @Field(() => Transaction, { nullable: false })
   transaction: Transaction;
 }

@@ -14,6 +14,8 @@ import { Account } from '../entities/account/entities/account.entity';
 import { Blockchain } from '../entities/blockchain/entities/blockchain.entity';
 import { Transaction } from '../entities/transaction/entities/transaction.entity';
 import { TransactionsHistoryResolver } from './gql/transactionsHistory.resolver';
+import { AccountAggregationFlowProducer } from '../queueProcessor/services/producers/accountAggregationFlow.producer';
+import { SubIdAggregatorQueueName } from '../../constants/queues';
 
 @Module({
   imports: [
@@ -24,6 +26,14 @@ import { TransactionsHistoryResolver } from './gql/transactionsHistory.resolver'
       Blockchain,
       Transaction,
     ]),
+    BullModule.registerQueue(
+      {
+        name: SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW,
+      },
+      {
+        name: SubIdAggregatorQueueName.DATASOURCE_HANDLING,
+      },
+    ),
     QueueProcessorModule,
   ],
   providers: [
@@ -33,7 +43,8 @@ import { TransactionsHistoryResolver } from './gql/transactionsHistory.resolver'
     DataAggregatorService,
     BlockchainService,
     AccountService,
-    TransactionsHistoryResolver
+    TransactionsHistoryResolver,
+    AccountAggregationFlowProducer,
   ],
   exports: [ApiGatewayService],
 })
