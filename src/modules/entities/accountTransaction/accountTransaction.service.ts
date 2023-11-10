@@ -9,6 +9,7 @@ import { TransferNative } from '../transferNative/entities/transferNative.entity
 import { VoteNative } from '../voteNative/entities/voteNative.entity';
 import { RewardNative } from '../rewardNative/entities/rewardNative.entity';
 import { AccountService } from '../account/account.service';
+import { CryptoUtils } from '../../../utils/cryptoUtils';
 
 type AccountTransactionNativeData<T extends TransactionKind> =
   T extends TransactionKind.TRANSFER_TO
@@ -26,8 +27,8 @@ export class AccountTransactionService {
   constructor(
     @InjectRepository(AccountTransaction)
     public readonly accountTransactionRepository: Repository<AccountTransaction>,
+    private cryptoUtils: CryptoUtils,
   ) {}
-
 
   async getAccountTransaction(
     accountTxId: string,
@@ -49,9 +50,20 @@ export class AccountTransactionService {
     pageSize,
     offset,
   }: FindAccountTxHistoryArgs): Promise<[AccountTransaction[], number]> {
-    return await this.accountTransactionRepository.findAndCount({
+    return this.accountTransactionRepository.findAndCount({
       where: {
-        account: { id: publicKey },
+        account: { id: this.cryptoUtils.substrateAddressToHex(publicKey) },
+      },
+      relations: {
+        blockchain: true,
+        transaction: {
+          transferNative: {
+            from: true,
+            to: true,
+          },
+          voteNative: true,
+          rewardNative: true,
+        },
       },
       skip: offset,
       take: pageSize,

@@ -79,9 +79,19 @@ enum VoteResult {
   NAY
 }
 
+type HistoryUpdateSubscription {
+  id: String!
+  account: Account!
+  createdAt: DateTime!
+  executedAt: DateTime
+  latestHistoryRequestAt: DateTime!
+  updateIntervalMs: Int!
+}
+
 type Account {
   id: String!
   transactions: [AccountTransaction!]!
+  updateSubscriptions: [HistoryUpdateSubscription!]
   latestProcessedBlock: JSON
 }
 
@@ -90,8 +100,19 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 """
 scalar JSON
 
+type FindTransactionsHistoryResponseDto {
+  data: [AccountTransaction!]!
+  total: Int
+  offset: Int
+  pageSize: Int
+}
+
+type RefreshTxHistoryResponseDto {
+  success: Boolean
+}
+
 type Query {
-  accountTxHistory(where: FindAccountTxHistoryArgs!): String!
+  accountTxHistory(where: FindAccountTxHistoryArgs!): FindTransactionsHistoryResponseDto!
 }
 
 input FindAccountTxHistoryArgs {
@@ -112,9 +133,11 @@ enum QueryOrder {
 }
 
 type Mutation {
-  refreshAccountTxHistory(args: EnqueueAccountAggregationJobInput!): String!
+  refreshAccountTxHistory(args: EnqueueAccountAggregationJobInput!): RefreshTxHistoryResponseDto!
 }
 
 input EnqueueAccountAggregationJobInput {
   publicKey: String!
+  jobName: String!
+  jobOptions: JSON
 }

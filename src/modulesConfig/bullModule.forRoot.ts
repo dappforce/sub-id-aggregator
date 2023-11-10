@@ -13,8 +13,9 @@ export default {
         maxRetriesPerRequest: null,
         enableReadyCheck: false,
         showFriendlyErrorStack: true,
-        ...(config.NODE_ENV === 'production'
-          ? { tls: {}, connectTimeout: 40000 }
+        keepAlive: 30_000,
+        ...(config.AGGREGATOR_REDIS_ENABLE_SSL
+          ? { tls: {}, connectTimeout: 60_000 }
           : {}),
 
         retryStrategy: (times) => {
@@ -25,7 +26,7 @@ export default {
           console.log('Redis connection retry -', times);
           const delay = Math.min(times * 1000, 2000);
           return delay;
-        }
+        },
       });
 
       console.log('Redis client isCluster - ', client.isCluster);
@@ -63,8 +64,8 @@ export default {
         lockDuration: 20000, // Check for stalled jobs each 2 min
         lockRenewTime: 10000,
         stalledInterval: 20000,
-        maxStalledCount: 1
-      }
+        maxStalledCount: 1,
+      },
     };
-  }
+  },
 } as SharedBullAsyncConfiguration;

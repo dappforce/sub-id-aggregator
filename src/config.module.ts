@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { transformAndValidateSync } from 'class-transformer-validator';
 import { IsNotEmpty } from 'class-validator';
 import * as dotenv from 'dotenv';
+import { Transform } from 'class-transformer';
 
 dotenv.config({ path: `${__dirname}/../.env.local` });
 
@@ -30,8 +31,13 @@ export class AppConfig {
 
   @IsNotEmpty()
   readonly AGGREGATOR_REDIS_PORT: string;
+
   @IsNotEmpty()
   readonly AGGREGATOR_REDIS_PASSWORD: string;
+
+  @Transform(({ value }: { value: string }) => value === 'true')
+  @IsNotEmpty()
+  readonly AGGREGATOR_REDIS_ENABLE_SSL: boolean;
 
   @IsNotEmpty()
   readonly DATA_SOURCE_GSQUID_MAIN_POLKADOT: string;
@@ -47,6 +53,11 @@ export class AppConfig {
 
   @IsNotEmpty()
   readonly DATA_SOURCE_GSQUID_MAIN_ASTAR: string;
+
+  @Transform(({ value }: { value: string }) => +value)
+  @IsNotEmpty()
+  readonly AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: number;
+
 
   @IsNotEmpty()
   readonly NODE_ENV: string;

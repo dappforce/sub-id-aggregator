@@ -21,11 +21,20 @@ import { TransferNative } from '../entities/transferNative/entities/transferNati
 import { TransactionService } from '../entities/transaction/transaction.service';
 import { AccountTransactionService } from '../entities/accountTransaction/accountTransaction.service';
 import { Transaction } from '../entities/transaction/entities/transaction.entity';
+import { AccountSyncSchedulerService } from '../accountSyncScheduler/accountSyncScheduler.service';
+import { HistoryUpdateSubscription } from '../accountSyncScheduler/entities/historyUpdateSubscription.entity';
 
 @Module({
   imports: [
     DependencyServiceModule,
-    TypeOrmModule.forFeature([Account, Blockchain, TransferNative, Transaction, AccountTransaction]),
+    TypeOrmModule.forFeature([
+      Account,
+      Blockchain,
+      TransferNative,
+      Transaction,
+      AccountTransaction,
+      HistoryUpdateSubscription,
+    ]),
     BullModule.registerQueue(
       {
         name: SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW,
@@ -57,6 +66,7 @@ import { Transaction } from '../entities/transaction/entities/transaction.entity
     TransferNativeService,
     TransactionService,
     AccountTransactionService,
+    AccountSyncSchedulerService,
   ],
   exports: [AccountAggregationFlowConsumer, DatasourceHandlingProducer],
 })

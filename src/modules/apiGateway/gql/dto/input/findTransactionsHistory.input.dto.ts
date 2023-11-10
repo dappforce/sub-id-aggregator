@@ -3,11 +3,13 @@ import {
   FindAccountTxHistoryOrderBy,
   QueryOrder,
 } from '../../../../../constants/common';
+import { IsValidSubstrateAddress } from '../../../../../common/validators/validators';
 
 @InputType()
 export class FindAccountTxHistoryArgs {
   @Field(() => String!, { nullable: false })
-  publicKey?: string;
+  @IsValidSubstrateAddress()
+  publicKey: string;
 
   @Field(() => Int, { nullable: true, defaultValue: 0 })
   offset?: number;

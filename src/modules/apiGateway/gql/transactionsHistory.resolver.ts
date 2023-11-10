@@ -4,6 +4,7 @@ import { FindTransactionsHistoryResponseDto } from './dto/response/findTransacti
 import { ApiGatewayService } from '../services/apiGateway.service';
 import { EnqueueAccountAggregationJobInput } from '../../queueProcessor/dto/enqueueAccountAggregationJob.input';
 import { AccountAggregationFlowProducer } from '../../queueProcessor/services/producers/accountAggregationFlow.producer';
+import { RefreshTxHistoryResponseDto } from './dto/response/refreshTxHistory.response.dto';
 
 @Resolver()
 export class TransactionsHistoryResolver {
@@ -12,7 +13,7 @@ export class TransactionsHistoryResolver {
     private accountAggregationFlowProducer: AccountAggregationFlowProducer,
   ) {}
 
-  @Query(() => String)
+  @Query(() => FindTransactionsHistoryResponseDto)
   accountTxHistory(
     @Args('where', { type: () => FindAccountTxHistoryArgs })
     where: FindAccountTxHistoryArgs,
@@ -20,11 +21,14 @@ export class TransactionsHistoryResolver {
     return this.apiGatewayService.findAccountTxHistory(where);
   }
 
-  @Mutation(() => String)
-  refreshAccountTxHistory(
+  // TODO testing mutation to emulate tasks adding by SubID back
+  @Mutation(() => RefreshTxHistoryResponseDto)
+  async refreshAccountTxHistory(
     @Args('args')
     args: EnqueueAccountAggregationJobInput,
-  ): Promise<void> {
-    return this.accountAggregationFlowProducer.enqueueTask(args);
+  ): Promise<RefreshTxHistoryResponseDto> {
+    await this.accountAggregationFlowProducer.enqueueTask(args);
+
+    return { success: true };
   }
 }

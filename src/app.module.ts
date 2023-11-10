@@ -21,6 +21,8 @@ import { TransferNativeModule } from './modules/entities/transferNative/transfer
 import { VoteNativeModule } from './modules/entities/voteNative/voteNative.module';
 import config from './modulesConfig';
 import { PlatformBootstrapperModule } from './platformBootstrapper/platformBootstrapper.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AccountSyncSchedulerModule } from './modules/accountSyncScheduler/accountSyncScheduler.module';
 
 dotenv.config();
 
@@ -35,6 +37,7 @@ dotenv.config();
       adapter: ExpressAdapter,
     }),
     TypeOrmModule.forRootAsync(config.typeOrmModuleForRoot),
+    ScheduleModule.forRoot(),
     DependencyServiceModule,
     QueueProcessorModule,
     ApiGatewayModule,
@@ -46,7 +49,8 @@ dotenv.config();
     TransactionModule,
     TransferNativeModule,
     VoteNativeModule,
-    PlatformBootstrapperModule
+    PlatformBootstrapperModule,
+    AccountSyncSchedulerModule
   ],
 })
 export class AppModule implements NestModule {

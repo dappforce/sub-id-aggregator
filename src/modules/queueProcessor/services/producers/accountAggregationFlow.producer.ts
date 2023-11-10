@@ -11,12 +11,15 @@ import { CollectEventDataFromDataSourceInput } from '../../dto/collectEventDataF
 import { CollectEventDataFromDataSourceResponse } from '../../dto/collectEventDataFromDataSource.response';
 import { EnqueueAccountAggregationJobInput } from '../../dto/enqueueAccountAggregationJob.input';
 import { RefreshAccountTxHistoryJobDataDto } from '../../dto/refreshAccountTxHistoryJobData.dto';
+import { EnqueueAccountHistoryRenewRepeatableJobInput } from '../../dto/enqueueAccountHistoryRenewRepeatableJob.input';
+import { CryptoUtils } from '../../../../utils/cryptoUtils';
 
 @Injectable()
 export class AccountAggregationFlowProducer {
   constructor(
     @InjectQueue(SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW)
     private accountAggregationFlowQueue: Queue,
+    private cryptoUtils: CryptoUtils,
   ) {}
 
   getJobId(data: CollectEventDataFromDataSourceInput): string {
@@ -25,15 +28,25 @@ export class AccountAggregationFlowProducer {
 
   async enqueueTask(args: EnqueueAccountAggregationJobInput) {
     const taskPayload: RefreshAccountTxHistoryJobDataDto = {
-      requestId: crypto.randomUUID(),
-      publicKey: args.publicKey,
-      requestedAt: new Date().toISOString(),
+      publicKey: this.cryptoUtils.substrateAddressToHex(args.publicKey),
     };
 
+    console.log(args);
+
     const job = await this.accountAggregationFlowQueue.add(
-      SubIdAggregatorJobName.REFRESH_TX_HISTORY_FOR_ACCOUNT,
+      args.jobName,
       taskPayload,
-      { attempts: 5, jobId: crypto.randomUUID() },
+      {
+        attempts: 5,
+        jobId: args.publicKey,
+        removeOnComplete: true,
+        removeOnFail: true,
+        ...(args.jobOptions || {}),
+      },
     );
+
+    console.log('job.id - ', job.id);
+
+    return job;
   }
 }
