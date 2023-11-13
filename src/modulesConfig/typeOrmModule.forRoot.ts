@@ -28,6 +28,7 @@ export default {
       poolErrorHandler: (e) => {
         console.log('PG pool Error ', e);
       },
+      // logging: 'all',
       logNotifications: true,
       keepConnectionAlive: true,
       type: 'postgres',

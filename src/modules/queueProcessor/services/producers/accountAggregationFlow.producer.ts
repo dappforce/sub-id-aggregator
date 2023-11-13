@@ -38,14 +38,12 @@ export class AccountAggregationFlowProducer {
       taskPayload,
       {
         attempts: 5,
-        jobId: args.publicKey,
+        jobId: `${args.publicKey}-${args.jobName}`,
         removeOnComplete: true,
         removeOnFail: true,
         ...(args.jobOptions || {}),
       },
     );
-
-    console.log('job.id - ', job.id);
 
     return job;
   }

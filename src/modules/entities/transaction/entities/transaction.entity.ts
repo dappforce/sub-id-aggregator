@@ -20,7 +20,6 @@ import crypto from 'node:crypto';
 @ObjectType()
 export class Transaction {
   constructor(props?: Partial<Transaction>) {
-    this.id = crypto.randomUUID();
     Object.assign(this, props);
   }
 

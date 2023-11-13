@@ -1,4 +1,8 @@
+import { NativeTransactionKind } from '../../../constants/common';
+import { BlockchainTag } from '../../../constants/blockchain';
+
 export class CollectEventDataHandlerResponse {
-  success: boolean;
-  message?: string;
+  latestProcessedBlock: number | null;
+  action: NativeTransactionKind;
+  blockchainTag: BlockchainTag;
 }

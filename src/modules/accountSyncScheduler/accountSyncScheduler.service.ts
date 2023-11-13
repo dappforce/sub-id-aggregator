@@ -58,9 +58,6 @@ export class AccountSyncSchedulerService {
       address,
     );
 
-    console.log('subscriptionData - ');
-    console.dir(subscriptionData, { depth: null });
-
     if (!!subscriptionData.executedAt) return;
     // TODO implement changing updateIntervalMs if account's history is highly demanded
 

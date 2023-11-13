@@ -1,33 +1,20 @@
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  BigInt: { input: any; output: any };
-  DateTime: { input: any; output: any };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  BigInt: { input: any; output: any; }
+  DateTime: { input: any; output: any; }
 };
 
 export type Account = {
@@ -40,12 +27,14 @@ export type Account = {
   transfers: Array<Transfer>;
 };
 
+
 export type AccountRewardsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Array<StakingRewardOrderByInput>>;
   where?: InputMaybe<StakingRewardWhereInput>;
 };
+
 
 export type AccountTransfersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -90,7 +79,7 @@ export enum AccountOrderByInput {
   SubIdAsc = 'sub_id_ASC',
   SubIdDesc = 'sub_id_DESC',
   SubNameAsc = 'sub_name_ASC',
-  SubNameDesc = 'sub_name_DESC',
+  SubNameDesc = 'sub_name_DESC'
 }
 
 export type AccountWhereInput = {
@@ -174,6 +163,7 @@ export type Identity = {
   web?: Maybe<Scalars['String']['output']>;
 };
 
+
 export type IdentitySubsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -219,7 +209,7 @@ export enum IdentityOrderByInput {
   TwitterAsc = 'twitter_ASC',
   TwitterDesc = 'twitter_DESC',
   WebAsc = 'web_ASC',
-  WebDesc = 'web_DESC',
+  WebDesc = 'web_DESC'
 }
 
 export type IdentitySub = {
@@ -266,7 +256,7 @@ export enum IdentitySubOrderByInput {
   SuperTwitterAsc = 'super_twitter_ASC',
   SuperTwitterDesc = 'super_twitter_DESC',
   SuperWebAsc = 'super_web_ASC',
-  SuperWebDesc = 'super_web_DESC',
+  SuperWebDesc = 'super_web_DESC'
 }
 
 export type IdentitySubWhereInput = {
@@ -429,9 +419,7 @@ export type IdentityWhereInput = {
   pgpFingerprint_lt?: InputMaybe<Scalars['String']['input']>;
   pgpFingerprint_lte?: InputMaybe<Scalars['String']['input']>;
   pgpFingerprint_not_contains?: InputMaybe<Scalars['String']['input']>;
-  pgpFingerprint_not_containsInsensitive?: InputMaybe<
-    Scalars['String']['input']
-  >;
+  pgpFingerprint_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
   pgpFingerprint_not_endsWith?: InputMaybe<Scalars['String']['input']>;
   pgpFingerprint_not_eq?: InputMaybe<Scalars['String']['input']>;
   pgpFingerprint_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -500,7 +488,7 @@ export enum Judgement {
   LowQuality = 'LowQuality',
   OutOfDate = 'OutOfDate',
   Reasonable = 'Reasonable',
-  Unknown = 'Unknown',
+  Unknown = 'Unknown'
 }
 
 export type NativeTransfer = {
@@ -541,7 +529,7 @@ export enum NativeTransferOrderByInput {
   ToIdAsc = 'to_id_ASC',
   ToIdDesc = 'to_id_DESC',
   ToPublicKeyAsc = 'to_publicKey_ASC',
-  ToPublicKeyDesc = 'to_publicKey_DESC',
+  ToPublicKeyDesc = 'to_publicKey_DESC'
 }
 
 export type NativeTransferWhereInput = {
@@ -576,9 +564,7 @@ export type NativeTransferWhereInput = {
   extrinsicHash_lt?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_lte?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_contains?: InputMaybe<Scalars['String']['input']>;
-  extrinsicHash_not_containsInsensitive?: InputMaybe<
-    Scalars['String']['input']
-  >;
+  extrinsicHash_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_endsWith?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_eq?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -669,13 +655,16 @@ export type Query = {
   transfersConnection: TransfersConnection;
 };
 
+
 export type QueryAccountByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 export type QueryAccountByUniqueInputArgs = {
   where: WhereIdInput;
 };
+
 
 export type QueryAccountsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -684,12 +673,14 @@ export type QueryAccountsArgs = {
   where?: InputMaybe<AccountWhereInput>;
 };
 
+
 export type QueryAccountsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   orderBy: Array<AccountOrderByInput>;
   where?: InputMaybe<AccountWhereInput>;
 };
+
 
 export type QueryIdentitiesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -698,6 +689,7 @@ export type QueryIdentitiesArgs = {
   where?: InputMaybe<IdentityWhereInput>;
 };
 
+
 export type QueryIdentitiesConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -705,21 +697,26 @@ export type QueryIdentitiesConnectionArgs = {
   where?: InputMaybe<IdentityWhereInput>;
 };
 
+
 export type QueryIdentityByIdArgs = {
   id: Scalars['String']['input'];
 };
+
 
 export type QueryIdentityByUniqueInputArgs = {
   where: WhereIdInput;
 };
 
+
 export type QueryIdentitySubByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 export type QueryIdentitySubByUniqueInputArgs = {
   where: WhereIdInput;
 };
+
 
 export type QueryIdentitySubsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -728,6 +725,7 @@ export type QueryIdentitySubsArgs = {
   where?: InputMaybe<IdentitySubWhereInput>;
 };
 
+
 export type QueryIdentitySubsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -735,13 +733,16 @@ export type QueryIdentitySubsConnectionArgs = {
   where?: InputMaybe<IdentitySubWhereInput>;
 };
 
+
 export type QueryNativeTransferByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 export type QueryNativeTransferByUniqueInputArgs = {
   where: WhereIdInput;
 };
+
 
 export type QueryNativeTransfersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -750,6 +751,7 @@ export type QueryNativeTransfersArgs = {
   where?: InputMaybe<NativeTransferWhereInput>;
 };
 
+
 export type QueryNativeTransfersConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -757,13 +759,16 @@ export type QueryNativeTransfersConnectionArgs = {
   where?: InputMaybe<NativeTransferWhereInput>;
 };
 
+
 export type QueryStakingRewardByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 export type QueryStakingRewardByUniqueInputArgs = {
   where: WhereIdInput;
 };
+
 
 export type QueryStakingRewardsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -772,6 +777,7 @@ export type QueryStakingRewardsArgs = {
   where?: InputMaybe<StakingRewardWhereInput>;
 };
 
+
 export type QueryStakingRewardsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -779,13 +785,16 @@ export type QueryStakingRewardsConnectionArgs = {
   where?: InputMaybe<StakingRewardWhereInput>;
 };
 
+
 export type QueryTransferByIdArgs = {
   id: Scalars['String']['input'];
 };
 
+
 export type QueryTransferByUniqueInputArgs = {
   where: WhereIdInput;
 };
+
 
 export type QueryTransfersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -793,6 +802,7 @@ export type QueryTransfersArgs = {
   orderBy?: InputMaybe<Array<TransferOrderByInput>>;
   where?: InputMaybe<TransferWhereInput>;
 };
+
 
 export type QueryTransfersConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
@@ -843,7 +853,7 @@ export enum StakingRewardOrderByInput {
   TimestampAsc = 'timestamp_ASC',
   TimestampDesc = 'timestamp_DESC',
   ValidatorIdAsc = 'validatorId_ASC',
-  ValidatorIdDesc = 'validatorId_DESC',
+  ValidatorIdDesc = 'validatorId_DESC'
 }
 
 export type StakingRewardWhereInput = {
@@ -889,9 +899,7 @@ export type StakingRewardWhereInput = {
   extrinsicHash_lt?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_lte?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_contains?: InputMaybe<Scalars['String']['input']>;
-  extrinsicHash_not_containsInsensitive?: InputMaybe<
-    Scalars['String']['input']
-  >;
+  extrinsicHash_not_containsInsensitive?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_endsWith?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_eq?: InputMaybe<Scalars['String']['input']>;
   extrinsicHash_not_in?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -959,7 +967,7 @@ export type Transfer = {
 
 export enum TransferDirection {
   From = 'From',
-  To = 'To',
+  To = 'To'
 }
 
 export type TransferEdge = {
@@ -988,7 +996,7 @@ export enum TransferOrderByInput {
   TransferSuccessAsc = 'transfer_success_ASC',
   TransferSuccessDesc = 'transfer_success_DESC',
   TransferTimestampAsc = 'transfer_timestamp_ASC',
-  TransferTimestampDesc = 'transfer_timestamp_DESC',
+  TransferTimestampDesc = 'transfer_timestamp_DESC'
 }
 
 export type TransferWhereInput = {
@@ -1040,55 +1048,29 @@ export type GetTransfersByAccountQueryVariables = Exact<{
   orderBy: Array<TransferOrderByInput> | TransferOrderByInput;
 }>;
 
-export type GetTransfersByAccountQuery = {
-  __typename?: 'Query';
-  transfers: Array<{
-    __typename?: 'Transfer';
-    id: string;
-    direction?: TransferDirection | null;
-    transfer?: {
-      __typename?: 'NativeTransfer';
-      amount: any;
-      blockNumber: number;
-      extrinsicHash?: string | null;
-      id: string;
-      success: boolean;
-      timestamp: any;
-      from: { __typename?: 'Account'; id: string };
-      to: { __typename?: 'Account'; id: string };
-    } | null;
-  }>;
-};
+
+export type GetTransfersByAccountQuery = { __typename?: 'Query', transfers: Array<{ __typename?: 'Transfer', id: string, direction?: TransferDirection | null, transfer?: { __typename?: 'NativeTransfer', amount: any, blockNumber: number, extrinsicHash?: string | null, id: string, success: boolean, timestamp: any, from: { __typename?: 'Account', publicKey: string }, to: { __typename?: 'Account', publicKey: string } } | null }> };
+
 
 export const GetTransfersByAccount = gql`
-  query GetTransfersByAccount(
-    $where: TransferWhereInput!
-    $limit: Int!
-    $offset: Int!
-    $orderBy: [TransferOrderByInput!]!
-  ) {
-    transfers(
-      where: $where
-      limit: $limit
-      offset: $offset
-      orderBy: $orderBy
-    ) {
+    query GetTransfersByAccount($where: TransferWhereInput!, $limit: Int!, $offset: Int!, $orderBy: [TransferOrderByInput!]!) {
+  transfers(where: $where, limit: $limit, offset: $offset, orderBy: $orderBy) {
+    id
+    direction
+    transfer {
+      amount
+      blockNumber
+      extrinsicHash
+      from {
+        publicKey
+      }
       id
-      direction
-      transfer {
-        amount
-        blockNumber
-        extrinsicHash
-        from {
-          id
-        }
-        id
-        success
-        timestamp
-        to {
-          id
-        }
+      success
+      timestamp
+      to {
+        publicKey
       }
     }
   }
-`;
+}
+    `;

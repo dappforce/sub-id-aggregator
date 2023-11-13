@@ -20,13 +20,13 @@ export const GET_TRANSFERS_BY_ACCOUNT = gql`
         blockNumber
         extrinsicHash
         from {
-          id
+          publicKey
         }
         id
         success
         timestamp
         to {
-          id
+          publicKey
         }
       }
     }

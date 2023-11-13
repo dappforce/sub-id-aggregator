@@ -9,6 +9,7 @@ import {
 } from '../../../../constants/queues';
 import { CollectEventDataFromDataSourceInput } from '../../dto/collectEventDataFromDataSource.input';
 import { CollectEventDataFromDataSourceResponse } from '../../dto/collectEventDataFromDataSource.response';
+import { CollectEventDataHandlerResponse } from '../../../dataAggregator/dto/collectEventDataHandler.response';
 
 @Injectable()
 export class DatasourceHandlingProducer {
@@ -51,15 +52,25 @@ export class DatasourceHandlingProducer {
         const job = await this.datasourceHandlingQueue.add(
           requestData.event,
           requestData,
-          { attempts: 5, jobId: this.getJobId(requestData) },
+          {
+            attempts: 5,
+            jobId: this.getJobId(requestData),
+            removeOnComplete: true,
+            removeOnFail: false,
+          },
         );
+
+        // const checkInterval = setInterval(async () => {
+        //   const jobState = await job.getState();
+        //   console.log('jobState - ', jobState);
+        // }, 500);
 
         const jobResult = await job.finished();
 
         // TODO add result check
         // TODO Add a watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
 
-        resolve({ event: requestData.event, success: jobResult.success });
+        resolve({ jobResult: JSON.parse(jobResult), requestData });
       },
     );
   }

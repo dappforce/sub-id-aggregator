@@ -17,17 +17,19 @@ import { AccountService } from '../../entities/account/account.service';
 import { TransactionService } from '../../entities/transaction/transaction.service';
 import { AccountTransactionService } from '../../entities/accountTransaction/accountTransaction.service';
 import { CollectEventDataHandlerResponse } from '../dto/collectEventDataHandler.response';
+import crypto from 'node:crypto';
+import { CommonUtils } from '../../../utils/commonUtils';
 
 @Injectable()
 export class AggregationHelper {
   constructor(
     private blockchainService: BlockchainService,
-    private datasourceHandlingProducer: DatasourceHandlingProducer,
     private dataSourceUtils: DataSourceUtils,
     private transferNativeService: TransferNativeService,
     private transactionService: TransactionService,
     private accountService: AccountService,
     private accountTransactionService: AccountTransactionService,
+    private commonUtils: CommonUtils,
   ) {}
 
   async collectTransferEventData(
@@ -74,23 +76,27 @@ export class AggregationHelper {
         amount: BigInt(transferData.transfer.amount),
         success: transferData.transfer.success,
         from: await this.accountService.getOrCreateAccount(
-          transferData.transfer.from.id,
+          transferData.transfer.from.publicKey,
         ),
         to: await this.accountService.getOrCreateAccount(
-          transferData.transfer.from.id,
+          transferData.transfer.to.publicKey,
         ),
       });
+      const txKind =
+        transferData.direction === TransferDirection.From
+          ? TransactionKind.TRANSFER_FROM
+          : TransactionKind.TRANSFER_TO;
 
       const transactionEntity = new Transaction({
-        txKind:
-          transferData.direction === TransferDirection.From
-            ? TransactionKind.TRANSFER_FROM
-            : TransactionKind.TRANSFER_TO,
+        id: `${nativeTransferEntity.id}-${txKind}`,
         transferNative: nativeTransferEntity,
+        txKind,
       });
 
       const accountTransaction = new AccountTransaction({
-        id: `${inputData.publicKey}-${transactionEntity.id}`,
+        id: `${this.commonUtils.getStringShortcut(inputData.publicKey)}-${
+          transactionEntity.id
+        }`,
         txKind: transactionEntity.txKind,
         account: txAccount,
         blockchainTag: inputData.blockchainTag,
@@ -119,9 +125,13 @@ export class AggregationHelper {
     await this.accountTransactionService.accountTransactionRepository.save(
       accountTransactionsBuffer,
     );
-
     return {
-      success: true,
+      latestProcessedBlock:
+        responseBuffer.length > 0
+          ? responseBuffer[responseBuffer.length - 1].transfer.blockNumber
+          : null,
+      action: inputData.event,
+      blockchainTag: inputData.blockchainTag,
     };
   }
 

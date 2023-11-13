@@ -42,7 +42,7 @@ export class DataSourceUtils {
           offset: data.offset,
           orderBy: [TransferOrderByInput.TransferTimestampAsc],
           where: {
-            account: { id_eq: data.publicKey },
+            account: { publicKey_eq: data.publicKey },
             transfer: {
               blockNumber_gt: data.blockNumber_gt,
             },

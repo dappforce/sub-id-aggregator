@@ -4,4 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class CommonUtils {
   constructor() {}
 
+  getStringShortcut(publicKey: string): string {
+    return publicKey.substring(publicKey.length - 6, publicKey.length - 1);
+  }
 }

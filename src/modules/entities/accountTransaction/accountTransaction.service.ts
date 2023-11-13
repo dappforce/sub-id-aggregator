@@ -55,6 +55,7 @@ export class AccountTransactionService {
         account: { id: this.cryptoUtils.substrateAddressToHex(publicKey) },
       },
       relations: {
+        account: true,
         blockchain: true,
         transaction: {
           transferNative: {

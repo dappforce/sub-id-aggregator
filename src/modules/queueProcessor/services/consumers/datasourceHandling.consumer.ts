@@ -1,12 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import {
-  SubIdAggregatorJobName,
   SubIdAggregatorQueueName,
 } from '../../../../constants/queues';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
-import { RefreshAccountTxHistoryJobDataDto } from '../../dto/refreshAccountTxHistoryJobData.dto';
-import { DataAggregatorService } from '../../../dataAggregator/services/dataAggregator.service';
 import { AggregationHelper } from '../../../dataAggregator/services/aggregation.helper';
 import { CollectEventDataFromDataSourceInput } from '../../dto/collectEventDataFromDataSource.input';
 import { NativeTransactionKind } from '../../../../constants/common';

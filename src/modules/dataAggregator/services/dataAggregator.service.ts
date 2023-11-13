@@ -5,6 +5,7 @@ import { DatasourceHandlingProducer } from '../../queueProcessor/services/produc
 import { CollectEventDataFromDataSourceInput } from '../../queueProcessor/dto/collectEventDataFromDataSource.input';
 import { AccountService } from '../../entities/account/account.service';
 import { NativeTransactionKind } from '../../../constants/common';
+import { CollectEventDataHandlerResponse } from '../dto/collectEventDataHandler.response';
 
 @Injectable()
 export class DataAggregatorService {
@@ -17,11 +18,10 @@ export class DataAggregatorService {
   async handleRefreshAccountTransactionsHistory(
     data: RefreshAccountTxHistoryJobDataDto,
   ) {
-    console.log('handleRefreshAccountTransactionsHistory - ', data);
     // TODO add management of top level request from client
     // TODO add publicKey decoration
 
-    const account = await this.accountService.getOrCreateAccount(
+    const txAccount = await this.accountService.getOrCreateAccount(
       data.publicKey,
     );
 
@@ -36,7 +36,7 @@ export class DataAggregatorService {
               blockchainTag: chainData.tag,
               sourceUrl: chainData.events[eventName],
               latestProcessedBlock:
-                account.latestProcessedBlock[chainData.tag][eventName],
+                txAccount.latestProcessedBlock[chainData.tag][eventName],
             });
           }
           return chainEvents;
@@ -49,7 +49,20 @@ export class DataAggregatorService {
         ),
     );
 
-    console.log(aggregationResultByChain);
+    const accountProcessingState = txAccount.latestProcessedBlock;
+    for (const aggregationResult of aggregationResultByChain) {
+      if (aggregationResult.status !== 'fulfilled') continue;
+
+      const jobResult: CollectEventDataHandlerResponse =
+        aggregationResult.value.jobResult;
+      if (jobResult.latestProcessedBlock === null) continue;
+      accountProcessingState[jobResult.blockchainTag][jobResult.action] =
+        jobResult.latestProcessedBlock;
+    }
+
+    txAccount.latestProcessedBlock = accountProcessingState;
+    await this.accountService.accountRepository.save(txAccount);
+
     return {};
   }
 }
