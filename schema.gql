@@ -23,7 +23,7 @@ enum BlockchainTag {
 type TransferNative {
   id: String!
   blockNumber: Int!
-  extrinsicHash: String!
+  extrinsicHash: String
   timestamp: DateTime!
   amount: BigInt!
   success: Boolean!
@@ -67,6 +67,7 @@ type AccountTransaction {
   account: Account!
   blockchainTag: BlockchainTag!
   amount: BigInt!
+  ownerPublicKey: String!
   senderOrTargetPublicKey: String
   blockchain: Blockchain!
   timestamp: DateTime!
@@ -112,15 +113,21 @@ type RefreshTxHistoryResponseDto {
 }
 
 type Query {
-  accountTxHistory(where: FindAccountTxHistoryArgs!): FindTransactionsHistoryResponseDto!
+  accountTxHistory(args: FindAccountTxHistoryArgs!): FindTransactionsHistoryResponseDto!
 }
 
 input FindAccountTxHistoryArgs {
-  publicKey: String!
+  where: FindAccountTxHistoryWhereParams!
   offset: Int = 0
   pageSize: Int = 30
   orderBy: FindAccountTxHistoryOrderBy = timestamp
   orderDirection: QueryOrder = DESC
+}
+
+input FindAccountTxHistoryWhereParams {
+  publicKey: String
+  blockchainTag: BlockchainTag
+  txKind: TransactionKind
 }
 
 enum FindAccountTxHistoryOrderBy {

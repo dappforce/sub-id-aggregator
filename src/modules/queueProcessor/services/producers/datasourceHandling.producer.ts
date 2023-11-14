@@ -10,6 +10,8 @@ import {
 import { CollectEventDataFromDataSourceInput } from '../../dto/collectEventDataFromDataSource.input';
 import { CollectEventDataFromDataSourceResponse } from '../../dto/collectEventDataFromDataSource.response';
 import { CollectEventDataHandlerResponse } from '../../../dataAggregator/dto/collectEventDataHandler.response';
+import { CollectEventDataChunkFromDataSourceInput } from '../../dto/collectEventDataChunkFromDataSource.input';
+import { CollectTransfersChunkHandlerResponseResponse } from '../../../dataAggregator/dto/collectTransfersChunkHandlerResponse.response';
 
 @Injectable()
 export class DatasourceHandlingProducer {
@@ -22,28 +24,6 @@ export class DatasourceHandlingProducer {
     return crypto.randomUUID();
   }
 
-  // async enqueueJob({
-  //   jobData,
-  //   queueName,
-  //   jobId,
-  //   jobPriority = 1,
-  // }: {
-  //   jobData: EnqueueJobData;
-  //   queueName: DataHubQueueName;
-  //   jobId: string;
-  //   jobPriority: number;
-  // }): Promise<string> {
-  //   const job = await this.queueHandlersMap
-  //     .get(queueName)
-  //     .add(jobData.payload.callData.name, jobData, {
-  //       attempts: 5,
-  //       priority: jobPriority,
-  //       ...(jobId ? { jobId } : {}),
-  //     });
-  //   console.log(`job created - ${job.id} - with priority ${jobPriority}`);
-  //   return job.id.toString();
-  // }
-
   async collectEventDataFromDataSource(
     requestData: CollectEventDataFromDataSourceInput,
   ) {
@@ -53,16 +33,21 @@ export class DatasourceHandlingProducer {
           requestData.event,
           requestData,
           {
-            attempts: 5,
+            attempts: 20,
             jobId: this.getJobId(requestData),
             removeOnComplete: true,
             removeOnFail: false,
           },
         );
 
-        // const checkInterval = setInterval(async () => {
-        //   const jobState = await job.getState();
-        //   console.log('jobState - ', jobState);
+        // const logsInterval = setInterval(async () => {
+        //   const logs = await this.datasourceHandlingQueue.getJobLogs(job.id);
+        //   if (logs.count !== 0) {
+        //     console.log(`Job ${job.name}/${job.id}`);
+        //     console.dir(logs.logs, {
+        //       depth: null,
+        //     });
+        //   }
         // }, 500);
 
         const jobResult = await job.finished();
@@ -73,5 +58,31 @@ export class DatasourceHandlingProducer {
         resolve({ jobResult: JSON.parse(jobResult), requestData });
       },
     );
+  }
+
+  async enqueueAndWaitCollectTransferEventDataChunk(
+    requestData: CollectEventDataChunkFromDataSourceInput,
+  ) {
+    return new Promise<{
+      jobResult: CollectTransfersChunkHandlerResponseResponse;
+    }>(async (resolve, reject) => {
+      const job = await this.datasourceHandlingQueue.add(
+        'TRANSFER_CHUNK',
+        requestData,
+        {
+          attempts: 20,
+          jobId: crypto.randomUUID(),
+          removeOnComplete: false,
+          removeOnFail: false,
+        },
+      );
+
+      const jobResult = await job.finished();
+
+      // TODO add result check
+      // TODO Add a watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
+
+      resolve({ jobResult: JSON.parse(jobResult) });
+    });
   }
 }

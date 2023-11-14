@@ -6,6 +6,8 @@ import { CollectEventDataFromDataSourceInput } from '../../queueProcessor/dto/co
 import { AccountService } from '../../entities/account/account.service';
 import { NativeTransactionKind } from '../../../constants/common';
 import { CollectEventDataHandlerResponse } from '../dto/collectEventDataHandler.response';
+import { CryptoUtils } from '../../../utils/cryptoUtils';
+import { Job } from 'bull';
 
 @Injectable()
 export class DataAggregatorService {
@@ -13,16 +15,18 @@ export class DataAggregatorService {
     private blockchainService: BlockchainService,
     private datasourceHandlingProducer: DatasourceHandlingProducer,
     private accountService: AccountService,
+    private cryptoUtils: CryptoUtils,
   ) {}
 
   async handleRefreshAccountTransactionsHistory(
-    data: RefreshAccountTxHistoryJobDataDto,
+    job: Job<RefreshAccountTxHistoryJobDataDto>,
   ) {
+    const data: RefreshAccountTxHistoryJobDataDto = job.data;
     // TODO add management of top level request from client
-    // TODO add publicKey decoration
 
+    const publicKeyDecorated = this.cryptoUtils.addressToHex(data.publicKey);
     const txAccount = await this.accountService.getOrCreateAccount(
-      data.publicKey,
+      publicKeyDecorated,
     );
 
     const aggregationResultByChain = await Promise.allSettled(
@@ -32,7 +36,7 @@ export class DataAggregatorService {
           for (const eventName in chainData.events) {
             chainEvents.push({
               event: eventName as NativeTransactionKind,
-              publicKey: data.publicKey,
+              publicKey: publicKeyDecorated,
               blockchainTag: chainData.tag,
               sourceUrl: chainData.events[eventName],
               latestProcessedBlock:

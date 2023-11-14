@@ -11,15 +11,13 @@ import {
 import { GraphQLBigInt } from 'graphql-scalars';
 import 'json-bigint-patch';
 import { Account } from '../../account/entities/account.entity';
-import {
-  TransactionKind,
-  VoteResult,
-} from '../../../../constants/common';
+import { TransactionKind, VoteResult } from '../../../../constants/common';
 import { Blockchain } from '../../blockchain/entities/blockchain.entity';
 import { TransferNative } from '../../transferNative/entities/transferNative.entity';
 import { Transaction } from '../../transaction/entities/transaction.entity';
 import crypto from 'node:crypto';
 import { BlockchainTag } from '../../../../constants/blockchain';
+import { bigintTransformer } from '../../../../utils/typeOrmMarshal';
 
 @Entity()
 @ObjectType()
@@ -29,6 +27,7 @@ import { BlockchainTag } from '../../../../constants/blockchain';
   'senderOrTargetPublicKey',
   'timestamp',
   'success',
+  'ownerPublicKey',
 ])
 export class AccountTransaction {
   constructor(props?: Partial<AccountTransaction>) {
@@ -69,11 +68,15 @@ export class AccountTransaction {
     name: 'blockchain_tag',
   })
   @Field(() => BlockchainTag, { nullable: false })
-  blockchainTag: string;
+  blockchainTag: BlockchainTag;
 
-  @Column({ type: 'bigint', nullable: true })
+  @Column({ type: 'numeric', transformer: bigintTransformer, nullable: true })
   @Field(() => GraphQLBigInt, { nullable: false })
   amount?: bigint;
+
+  @Column({ nullable: true, name: 'owner_public_key' })
+  @Field(() => String, { nullable: false })
+  ownerPublicKey: string;
 
   @Column({ nullable: true, name: 'sender_or_target_public_key' })
   @Field(() => String, { nullable: true })

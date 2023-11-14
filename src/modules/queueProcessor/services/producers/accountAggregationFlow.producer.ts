@@ -28,10 +28,11 @@ export class AccountAggregationFlowProducer {
 
   async enqueueTask(args: EnqueueAccountAggregationJobInput) {
     const taskPayload: RefreshAccountTxHistoryJobDataDto = {
-      publicKey: this.cryptoUtils.substrateAddressToHex(args.publicKey),
+      publicKey: this.cryptoUtils.addressToHex(args.publicKey),
     };
 
     console.log(args);
+    console.log(taskPayload);
 
     const job = await this.accountAggregationFlowQueue.add(
       args.jobName,
@@ -40,10 +41,20 @@ export class AccountAggregationFlowProducer {
         attempts: 5,
         jobId: `${args.publicKey}-${args.jobName}`,
         removeOnComplete: true,
-        removeOnFail: true,
+        removeOnFail: false,
         ...(args.jobOptions || {}),
       },
     );
+
+    const logsInterval = setInterval(async () => {
+      const logs = await this.accountAggregationFlowQueue.getJobLogs(job.id);
+      if (logs.count !== 0) {
+        console.log(`Job ${job.name}/${job.id}`);
+        console.dir(logs.logs, {
+          depth: null,
+        });
+      }
+    }, 500);
 
     return job;
   }

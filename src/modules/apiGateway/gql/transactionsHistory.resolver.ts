@@ -15,10 +15,10 @@ export class TransactionsHistoryResolver {
 
   @Query(() => FindTransactionsHistoryResponseDto)
   accountTxHistory(
-    @Args('where', { type: () => FindAccountTxHistoryArgs })
-    where: FindAccountTxHistoryArgs,
+    @Args('args', { type: () => FindAccountTxHistoryArgs })
+    args: FindAccountTxHistoryArgs,
   ): Promise<FindTransactionsHistoryResponseDto> {
-    return this.apiGatewayService.findAccountTxHistory(where);
+    return this.apiGatewayService.findAccountTxHistory(args);
   }
 
   // TODO testing mutation to emulate tasks adding by SubID back

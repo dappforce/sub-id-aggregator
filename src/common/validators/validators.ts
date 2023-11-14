@@ -30,7 +30,7 @@ export function IsValidSubstrateAddress(validationOptions?: ValidationOptions) {
           const cryptoUtils = new CryptoUtils();
           return (
             typeof value === 'string' &&
-            cryptoUtils.isValidSubstrateAddress(value)
+            cryptoUtils.isValidAddress(value)
           );
         },
       },

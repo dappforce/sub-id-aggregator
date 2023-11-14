@@ -7,6 +7,7 @@ import { AccountService } from '../entities/account/account.service';
 import { AppConfig } from '../../config.module';
 import { AccountAggregationFlowProducer } from '../queueProcessor/services/producers/accountAggregationFlow.producer';
 import { SubIdAggregatorJobName } from '../../constants/queues';
+import { CryptoUtils } from '../../utils/cryptoUtils';
 
 @Injectable()
 export class AccountSyncSchedulerService {
@@ -16,17 +17,18 @@ export class AccountSyncSchedulerService {
     public readonly accountService: AccountService,
     public readonly accountAggregationFlowProducer: AccountAggregationFlowProducer,
     public readonly appConfig: AppConfig,
+    public readonly cryptoUtils: CryptoUtils,
   ) {}
 
-  getHistoryRenewJobId(address: string): string {
-    return `SCHEDULED_RENEW_${address}`;
+  getHistoryRenewJobId(publicKey: string): string {
+    return `SCHEDULED_RENEW_${publicKey}`;
   }
 
-  async getOrCreateHistoryUpdateSubEntity(address: string) {
+  async getOrCreateHistoryUpdateSubEntity(publicKey: string) {
     let subEntity = await this.historyUpdateSubscriptionRepository.findOne({
       where: {
         account: {
-          id: address,
+          id: publicKey,
         },
       },
       relations: {
@@ -36,7 +38,7 @@ export class AccountSyncSchedulerService {
 
     if (subEntity) return subEntity;
 
-    const account = await this.accountService.getOrCreateAccount(address);
+    const account = await this.accountService.getOrCreateAccount(publicKey);
     subEntity = new HistoryUpdateSubscription();
     subEntity.account = account;
     subEntity.createdAt = new Date();
@@ -50,22 +52,23 @@ export class AccountSyncSchedulerService {
   }
 
   async createOrRenewAccountUpdateSubscription({
-    address,
+    publicKey,
   }: {
-    address: string;
+    publicKey: string;
   }) {
+    const decoratedPublicKey = this.cryptoUtils.addressToHex(publicKey);
     const subscriptionData = await this.getOrCreateHistoryUpdateSubEntity(
-      address,
+      decoratedPublicKey,
     );
 
     if (!!subscriptionData.executedAt) return;
     // TODO implement changing updateIntervalMs if account's history is highly demanded
 
     await this.accountAggregationFlowProducer.enqueueTask({
-      publicKey: address,
+      publicKey: decoratedPublicKey,
       jobName: SubIdAggregatorJobName.REFRESH_TX_HISTORY_FOR_ACCOUNT_SCHEDULED,
       jobOptions: {
-        jobId: this.getHistoryRenewJobId(address),
+        jobId: this.getHistoryRenewJobId(decoratedPublicKey),
         repeat: {
           every: this.appConfig.AGGREGATOR_HISTORY_RENEW_INTERVAL_MS,
           limit: 120_960, // 7 days with interval 5 sec

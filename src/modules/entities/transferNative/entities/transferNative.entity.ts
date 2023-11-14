@@ -11,6 +11,7 @@ import { AccountTransaction } from '../../accountTransaction/entities/accountTra
 import { GraphQLBigInt } from 'graphql-scalars';
 import { Account } from '../../account/entities/account.entity';
 import { Blockchain } from '../../blockchain/entities/blockchain.entity';
+import { bigintTransformer } from '../../../../utils/typeOrmMarshal';
 
 @Entity()
 @ObjectType()
@@ -27,15 +28,15 @@ export class TransferNative {
   @Field(() => Int, { nullable: false })
   blockNumber: number;
 
-  @Column({ nullable: false, name: 'extrinsic_hash' })
-  @Field(() => String, { nullable: false })
-  extrinsicHash: string;
+  @Column({ nullable: true, name: 'extrinsic_hash' })
+  @Field(() => String, { nullable: true })
+  extrinsicHash?: string;
 
   @Column({ type: 'timestamp with time zone', nullable: false })
   @Field(() => Date, { nullable: false })
   timestamp: Date;
 
-  @Column({ type: 'bigint', nullable: true })
+  @Column({ type: 'numeric', transformer: bigintTransformer, nullable: true })
   @Field(() => GraphQLBigInt, { nullable: false })
   amount: bigint;
 

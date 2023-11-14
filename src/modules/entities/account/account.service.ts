@@ -6,9 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BlockchainService } from '../blockchain/blockchain.service';
-import {
-  NativeTransactionKind,
-} from '../../../constants/common';
+import { NativeTransactionKind } from '../../../constants/common';
 
 @Injectable()
 export class AccountService {
@@ -30,7 +28,8 @@ export class AccountService {
 
     let latestProcessedBlock: AccountLatestProcessedBlockMap | {} = {};
 
-    for (const blockchainData of this.blockchainService.blockchainDataSourceConfigs) {
+    for (const blockchainData of this.blockchainService
+      .blockchainDataSourceConfigs) {
       latestProcessedBlock[blockchainData.tag] = Object.fromEntries(
         Object.keys(blockchainData.events).map(
           // @ts-ignore
@@ -44,7 +43,16 @@ export class AccountService {
     account.latestProcessedBlock =
       latestProcessedBlock as AccountLatestProcessedBlockMap;
 
-    await this.accountRepository.save(account);
+    // await this.accountRepository.save(account, { transaction: false });
+
+    try {
+      await this.accountRepository.upsert(account, ['id']);
+    } catch (e) {
+      console.log(e);
+      account = await this.accountRepository.findOne({
+        where: { id: accountId },
+      });
+    }
 
     return account;
   }
