@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: aggregation-<BRANCH>
+  name: aggregation-<BRANCH>
+  namespace: sub-id
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: aggregation-<BRANCH>
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aggregation-<BRANCH>
+  namespace: sub-id
+  annotations:
+    ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    nginx.org/client-max-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/client-max-body-size: "10m"
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: <BRANCH>-aggregation.subsocial.network
+      http:
+        paths:
+          - backend:
+              service:
+                name: aggregation-<BRANCH>
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+
+  tls:
+    - hosts:
+        - <BRANCH>-aggregation.subsocial.network
+      secretName: subsocial-ssl
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aggregation-<BRANCH>-env
+  namespace: sub-id
+data:
+  AGGREGATOR_DB_DATABASE: "aggregator_<BRANCH>-env"
+  AGGREGATOR_REDIS_HOST: "redis-aggregation-<BRANCH>-master.default"
+  AGGREGATOR_REDIS_PREFIX: "aggregator_queue_<BRANCH>"
+  AGGREGATOR_REDIS_PORT: "6379"
+  AGGREGATOR_REDIS_ENABLE_SSL: "false"
+  AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: "10000"
+  DATA_SOURCE_GSQUID_MAIN_POLKADOT: "https://squid.subsquid.io/gs-main-polkadot/graphql"
+  DATA_SOURCE_GSQUID_MAIN_KUSAMA: "https://squid.subsquid.io/gs-main-kusama/graphql"
+  DATA_SOURCE_GSQUID_MAIN_MOONBEAM: "https://squid.subsquid.io/gs-main-moonbeam/graphql"
+  DATA_SOURCE_GSQUID_MAIN_MOONRIVER: "https://squid.subsquid.io/gs-main-moonriver/graphql"
+  DATA_SOURCE_GSQUID_MAIN_ASTAR: "https://squid.subsquid.io/gs-main-astar/graphql"
+  NODE_ENV: "development"
+  APP_PORT: "3000"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-<BRANCH>-env
+  namespace: sub-id
+data:
+  db-creation.sh: |
+
+    #!/bin/bash
+
+    set -e
+
+    # Check if the database already exists
+    if PGPASSWORD=$AGGREGATOR_DB_PASSWORD psql -U $AGGREGATOR_DB_USERNAME -h $AGGREGATOR_DB_HOST -p $AGGREGATOR_DB_PORT -lqt | cut -d \| -f 1 | grep "$AGGREGATOR_DB_DATABASE"; then
+      echo "Database '$AGGREGATOR_DB_DATABASE' already exists."
+    else
+      # Create the database
+      PGPASSWORD=$AGGREGATOR_DB_PASSWORD psql -U $AGGREGATOR_DB_USERNAME -h $AGGREGATOR_DB_HOST -p $AGGREGATOR_DB_PORT -c "create database \"$AGGREGATOR_DB_DATABASE\";"
+      echo "Database '$AGGREGATOR_DB_DATABASE' created."
+    fi
+
+  db-drop.sh: |
+
+    #!/bin/bash
+
+    set -e
+
+    # Check if the database exists
+    if PGPASSWORD=$AGGREGATOR_DB_PASSWORD psql -U $AGGREGATOR_DB_USERNAME -h $AGGREGATOR_DB_HOST -p $AGGREGATOR_DB_PORT -lqt | cut -d \| -f 1 | grep "$AGGREGATOR_DB_DATABASE"; then
+      # Remove the database
+      PGPASSWORD=$AGGREGATOR_DB_PASSWORD psql -U $AGGREGATOR_DB_USERNAME -h $AGGREGATOR_DB_HOST -p $AGGREGATOR_DB_PORT -c "DROP DATABASE \"$AGGREGATOR_DB_DATABASE\";"
+      echo "Database '$AGGREGATOR_DB_DATABASE' removed."
+    else
+      # Database doesn't exist
+      echo "Database '$AGGREGATOR_DB_DATABASE' doesn't exist."
+    fi
