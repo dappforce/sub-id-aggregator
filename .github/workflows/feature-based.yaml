@@ -1,0 +1,149 @@
+name: Feature based build and deploy aggregation service
+on:
+  push:
+    branches:
+      - deploy/**
+jobs:
+  redis_deploy:
+    name: redis_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_STAGING }}
+
+      - name: install helm
+        env:
+          HELM_VERSION: "3.9.2"
+        run: |
+          wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
+          tar -xzf helm-v${HELM_VERSION}-linux-amd64.tar.gz
+          install linux-amd64/helm /usr/local/bin
+          helm version
+
+      - name: install kustomize
+        env:
+          KUSTOMIZE_VERSION: "4.5.6"
+        run: |
+          wget -q https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz
+          tar -xzf kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz
+          install kustomize /usr/local/bin
+          kustomize version
+
+      - name: Update redis config files
+        run: NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/redis-k8s/base/kustomization.yaml
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: |
+          kustomize build $GITHUB_WORKSPACE/redis-k8s/overlays/staging/ --enable-helm  | kubectl apply -f -
+
+  aggregation_build:
+    name: build & Push aggregation Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Prepare
+        id: prep
+        run: |
+          echo "image=dappforce/subsocial-aggregation:${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+
+      - name: Set up Docker context for buildx
+        id: buildx-context
+        run: |
+           docker context create builders
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+        with:
+          endpoint: builders
+          version: latest
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
+
+      - name: Build docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          file: ./docker/Dockerfile
+          push: true
+          tags: |
+            ${{ env.image }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  aggregation_deploy:
+    name: aggregation_deploy
+    needs: aggregation_build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=$(echo ${GITHUB_REF#refs/heads/} | sed 's/^deploy\///')" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_STAGING }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_STAGING }}
+
+      - name: Update docker image name
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-aggregation:'${TAG}'|' $GITHUB_WORKSPACE/deployment/feature-based/deploy.yaml
+
+      - name: Update config files
+        run: NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/feature-based/all.yaml
+
+      - name: Update deploy file
+        run: NAME=${{ env.name }} && sed -i 's|<BRANCH>|'${NAME}'|' $GITHUB_WORKSPACE/deployment/feature-based/deploy.yaml
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: |
+            kubectl apply -f $GITHUB_WORKSPACE/deployment/feature-based/all.yaml
+            kubectl apply -f $GITHUB_WORKSPACE/deployment/feature-based/deploy.yaml
+
+      - name: Verify deployment
+        run: NAME=${{ env.name }} && kubectl -n sub-id rollout status deployment/aggregation-${NAME}
+
+      - name: CF deploy
+        run: curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE }}/dns_records"      -H "X-Auth-Email:${{ secrets.CF_MAIL }}"      -H "Authorization:Bearer ${{ secrets.CF_TOKEN }}"      -H "Content-Type:application/json"      --data '{"type":"A","name":"${{ env.name }}-aggregation.subsocial.network","content":"174.138.105.155","ttl":3600,"priority":10,"proxied":true}'
