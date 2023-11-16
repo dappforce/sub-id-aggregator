@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { AccountTransaction } from './entities/accountTransaction.entity';
 import { FindAccountTxHistoryArgs } from '../../apiGateway/gql/dto/input/findTransactionsHistory.input.dto';
 import { FindTransactionsHistoryResponseDto } from '../../apiGateway/gql/dto/response/findTransactionsHistory.response.dto';
@@ -53,8 +53,8 @@ export class AccountTransactionService {
     return this.accountTransactionRepository.findAndCount({
       where: {
         ownerPublicKey: this.cryptoUtils.addressToHex(publicKey),
-        blockchainTag,
-        txKind,
+        ...(blockchainTag ? { blockchainTag: In(blockchainTag) } : {}),
+        ...(txKind ? { txKind: In(txKind) } : {}),
       },
       relations: {
         account: true,

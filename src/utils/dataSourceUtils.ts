@@ -24,13 +24,34 @@ export class DataSourceUtils {
 
   constructor() {}
 
+  async requestWithRetry<T>(
+    requestPromise: Promise<T>,
+    { retries = 3, everyMs = 1_000 },
+    retriesCount = 0,
+  ): Promise<T> {
+    try {
+      return await requestPromise;
+    } catch (e) {
+      const updatedCount = retriesCount + 1;
+      if (updatedCount > retries) {
+        throw Error((e as Error).message);
+      }
+      await new Promise((resolve) => setTimeout(resolve, everyMs));
+      return await this.requestWithRetry<T>(
+        requestPromise,
+        { retries, everyMs },
+        updatedCount,
+      );
+    }
+  }
+
   squidQueryRequest<T, V extends Variables = Variables>(
     config: RequestOptions<V, T>,
     queryUrl: string,
   ) {
     if (!queryUrl) throw new Error('queryUrl is not provided');
 
-    const TIMEOUT = 60 * 1000; // 10 seconds
+    const TIMEOUT = 2 * 60 * 1000;
     const client = new GraphQLClient(queryUrl, {
       timeout: TIMEOUT,
       ...config,
@@ -39,28 +60,31 @@ export class DataSourceUtils {
   }
 
   async getTransfersByAccount(data: GetTransfersByAccountArgs) {
-    const res = await this.squidQueryRequest<
-      GetTransfersByAccountQuery,
-      QueryTransfersArgs
-    >(
-      {
-        document: GET_TRANSFERS_BY_ACCOUNT,
-        variables: {
-          limit: data.limit,
-          offset: data.offset,
-          // orderBy: [TransferOrderByInput.TransferTimestampAsc],
-          where: {
-            account: { publicKey_eq: data.publicKey },
-            transfer: {
-              blockNumber_gt: data.blockNumber_gt,
-              ...(data.blockNumber_lt
-                ? { blockNumber_lt: data.blockNumber_lt }
-                : {}),
+    console.log(
+      `request started :: ${data.blockNumber_gt}/${data.blockNumber_lt}`,
+    );
+    const res = await this.requestWithRetry<GetTransfersByAccountQuery>(
+      this.squidQueryRequest<GetTransfersByAccountQuery, QueryTransfersArgs>(
+        {
+          document: GET_TRANSFERS_BY_ACCOUNT,
+          variables: {
+            limit: data.limit,
+            offset: data.offset,
+            // orderBy: [TransferOrderByInput.TransferTimestampAsc],
+            where: {
+              account: { publicKey_eq: data.publicKey },
+              transfer: {
+                blockNumber_gt: data.blockNumber_gt,
+                ...(data.blockNumber_lt
+                  ? { blockNumber_lt: data.blockNumber_lt }
+                  : {}),
+              },
             },
           },
         },
-      },
-      data.queryUrl,
+        data.queryUrl,
+      ),
+      { retries: 5, everyMs: 1_500 },
     );
     return res;
   }

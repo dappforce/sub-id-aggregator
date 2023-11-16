@@ -25,10 +25,12 @@ import { CommonUtils } from '../../../utils/commonUtils';
 import { CollectEventDataChunkFromDataSourceInput } from '../../queueProcessor/dto/collectEventDataChunkFromDataSource.input';
 import { BlockchainTag } from '../../../constants/blockchain';
 import { CollectTransfersChunkHandlerResponseResponse } from '../dto/collectTransfersChunkHandlerResponse.response';
+import { AppConfig } from '../../../config.module';
+import { DatasourceChunksParallelHandlingProducer } from '../../queueProcessor/services/producers/datasourceChunksParallelHandling.producer';
 
 @Injectable()
 export class AggregationHelper {
-  private chunkBlocksWindow = 1_000_000;
+  private readonly chunkBlocksWindow: number;
 
   constructor(
     private blockchainService: BlockchainService,
@@ -38,8 +40,46 @@ export class AggregationHelper {
     private accountService: AccountService,
     private accountTransactionService: AccountTransactionService,
     private commonUtils: CommonUtils,
+    private appConfig: AppConfig,
     private datasourceHandlingProducer: DatasourceHandlingProducer,
-  ) {}
+    private datasourceChunksParallelHandlingProducer: DatasourceChunksParallelHandlingProducer,
+  ) {
+    this.chunkBlocksWindow = appConfig.AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE;
+  }
+
+  getChunksRanges({
+    latestProcessedBlock,
+    totalBlocks,
+  }: {
+    latestProcessedBlock: number;
+    totalBlocks: number;
+  }): [number, number | null][] {
+    let chunksRanges = [];
+
+    if (latestProcessedBlock === 0) {
+      const currentRequestBlocksWindow = totalBlocks - latestProcessedBlock;
+
+      let index = 0;
+      while (
+        index <=
+        Math.ceil(currentRequestBlocksWindow / this.chunkBlocksWindow) - 1
+      ) {
+        if ((index + 1) * this.chunkBlocksWindow > totalBlocks) {
+          chunksRanges.push([index * this.chunkBlocksWindow, null]);
+        } else if ((index + 1) * this.chunkBlocksWindow < totalBlocks) {
+          chunksRanges.push([
+            index * this.chunkBlocksWindow + 1,
+            (index + 1) * this.chunkBlocksWindow,
+          ]);
+        }
+        index++;
+      }
+    } else {
+      chunksRanges.push([latestProcessedBlock, null]);
+    }
+
+    return chunksRanges;
+  }
 
   async collectTransferEventData(
     inputData: CollectEventDataFromDataSourceInput,
@@ -49,46 +89,14 @@ export class AggregationHelper {
         queryUrl: inputData.sourceUrl,
       });
 
-    let chunksRanges = [];
-
-    if (inputData.latestProcessedBlock === 0) {
-      const currentRequestBlocksWindow =
-        sourceSquidStatus.squidStatus.height - inputData.latestProcessedBlock;
-
-      console.log(
-        'currentRequestBlocksWindow - ',
-        inputData.blockchainTag,
-        currentRequestBlocksWindow,
-      );
-
-      let index = 0;
-      while (
-        index <=
-        Math.ceil(currentRequestBlocksWindow / this.chunkBlocksWindow) - 1
-      ) {
-        if (
-          (index + 1) * this.chunkBlocksWindow >
-          sourceSquidStatus.squidStatus.height
-        ) {
-          chunksRanges.push([index * this.chunkBlocksWindow, null]);
-        } else if (
-          (index + 1) * this.chunkBlocksWindow <
-          sourceSquidStatus.squidStatus.height
-        ) {
-          chunksRanges.push([
-            index * this.chunkBlocksWindow + 1,
-            (index + 1) * this.chunkBlocksWindow,
-          ]);
-        }
-        index++;
-      }
-    } else {
-      chunksRanges.push([inputData.latestProcessedBlock, null]);
-    }
+    let chunksRanges = this.getChunksRanges({
+      latestProcessedBlock: inputData.latestProcessedBlock,
+      totalBlocks: sourceSquidStatus.squidStatus.height,
+    });
 
     const aggregationChunkResults = await Promise.allSettled(
       chunksRanges.map((range) => {
-        return this.datasourceHandlingProducer.enqueueAndWaitCollectTransferEventDataChunk(
+        return this.datasourceChunksParallelHandlingProducer.enqueueAndWaitCollectTransferEventDataChunk(
           {
             blockchainTag: inputData.blockchainTag,
             event: inputData.event,
@@ -191,16 +199,6 @@ export class AggregationHelper {
       { chunk: 1000 },
     );
 
-    // for (const aggregationResult of aggregationChunkResults) {
-    //   if (aggregationResult.status !== 'fulfilled') continue;
-    //
-    //   const jobResult: CollectEventDataHandlerResponse =
-    //     aggregationResult.value.jobResult;
-    //   if (jobResult.latestProcessedBlock === null) continue;
-    //   if (lastBlock < jobResult.latestProcessedBlock)
-    //     lastBlock = jobResult.latestProcessedBlock;
-    // }
-
     return {
       latestProcessedBlock:
         lastBlock ||
@@ -242,89 +240,6 @@ export class AggregationHelper {
     };
     const pageSize = 1000;
     await runQuery();
-
-    // const nativeTransferBuffer = [];
-    // const transactionsBuffer = [];
-    // const accountTransactionsBuffer = [];
-    //
-    // const txAccount = await this.accountService.getOrCreateAccount(
-    //   inputData.publicKey,
-    // );
-    //
-    // const blockchain = await this.blockchainService.getByTag(
-    //   inputData.blockchainTag,
-    // );
-
-    // for (const transferData of responseBuffer) {
-    //   const nativeTransferEntity = new TransferNative({
-    //     id: transferData.id,
-    //     blockNumber: transferData.transfer.blockNumber,
-    //     extrinsicHash: transferData.transfer.extrinsicHash,
-    //     timestamp: new Date(transferData.transfer.timestamp),
-    //     amount: BigInt(transferData.transfer.amount),
-    //     success: transferData.transfer.success,
-    //     from: await this.accountService.getOrCreateAccount(
-    //       transferData.transfer.from.publicKey,
-    //     ),
-    //     to: await this.accountService.getOrCreateAccount(
-    //       transferData.transfer.to.publicKey,
-    //     ),
-    //   });
-    //   const txKind =
-    //     transferData.direction === TransferDirection.From
-    //       ? TransactionKind.TRANSFER_FROM
-    //       : TransactionKind.TRANSFER_TO;
-    //
-    //   const transactionEntity = new Transaction({
-    //     id: `${nativeTransferEntity.id}-${txKind}`,
-    //     transferNative: nativeTransferEntity,
-    //     txKind,
-    //   });
-    //
-    //   const accountTransaction = new AccountTransaction({
-    //     id: `${this.commonUtils.getStringShortcut(inputData.publicKey)}-${
-    //       transactionEntity.id
-    //     }`,
-    //     ownerPublicKey: txAccount.id,
-    //     txKind: transactionEntity.txKind,
-    //     account: txAccount,
-    //     blockchainTag: inputData.blockchainTag,
-    //     amount: nativeTransferEntity.amount,
-    //     blockchain: blockchain,
-    //     senderOrTargetPublicKey:
-    //       transactionEntity.txKind === TransactionKind.TRANSFER_FROM
-    //         ? nativeTransferEntity.to.id
-    //         : nativeTransferEntity.from.id,
-    //     timestamp: nativeTransferEntity.timestamp,
-    //     success: nativeTransferEntity.success,
-    //     transaction: transactionEntity,
-    //   });
-    //
-    //   nativeTransferBuffer.push(nativeTransferEntity);
-    //   transactionsBuffer.push(transactionEntity);
-    //   accountTransactionsBuffer.push(accountTransaction);
-    // }
-
-    // await this.transferNativeService.transferNativeRepository.save(
-    //   nativeTransferBuffer,
-    //   { chunk: 1000 },
-    // );
-    // await this.transactionService.transactionRepository.save(
-    //   transactionsBuffer,
-    //   { chunk: 1000 },
-    // );
-    // await this.accountTransactionService.accountTransactionRepository.save(
-    //   accountTransactionsBuffer,
-    //   { chunk: 1000 },
-    // );
-    // return {
-    //   latestProcessedBlock:
-    //     responseBuffer.length > 0
-    //       ? responseBuffer[responseBuffer.length - 1].transfer.blockNumber
-    //       : null,
-    //   action: inputData.event,
-    //   blockchainTag: inputData.blockchainTag,
-    // };
     return {
       fetchedChunkData: responseBuffer,
     };

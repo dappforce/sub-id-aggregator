@@ -58,6 +58,9 @@ export class AppConfig {
   @IsNotEmpty()
   readonly AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: number;
 
+  @Transform(({ value }: { value: string }) => +value)
+  @IsNotEmpty()
+  readonly AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE: number;
 
   @IsNotEmpty()
   readonly NODE_ENV: string;
