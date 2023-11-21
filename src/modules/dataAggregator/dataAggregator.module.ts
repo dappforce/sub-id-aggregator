@@ -17,6 +17,7 @@ import { TransferNative } from '../entities/transferNative/entities/transferNati
 import { BullModule } from '@nestjs/bull';
 import { SubIdAggregatorQueueName } from '../../constants/queues';
 import { Transaction } from '../entities/transaction/entities/transaction.entity';
+import { DatasourceChunksParallelHandlingProducer } from '../queueProcessor/services/producers/datasourceChunksParallelHandling.producer';
 
 @Module({
   imports: [
@@ -35,12 +36,16 @@ import { Transaction } from '../entities/transaction/entities/transaction.entity
       {
         name: SubIdAggregatorQueueName.DATASOURCE_HANDLING,
       },
+      {
+        name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
+      },
     ),
   ],
   providers: [
     DataAggregatorService,
     BlockchainService,
     DatasourceHandlingProducer,
+    DatasourceChunksParallelHandlingProducer,
     AccountService,
     AccountTransactionService,
     AggregationHelper,

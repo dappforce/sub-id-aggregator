@@ -23,6 +23,9 @@ import { AccountTransactionService } from '../entities/accountTransaction/accoun
 import { Transaction } from '../entities/transaction/entities/transaction.entity';
 import { AccountSyncSchedulerService } from '../accountSyncScheduler/accountSyncScheduler.service';
 import { HistoryUpdateSubscription } from '../accountSyncScheduler/entities/historyUpdateSubscription.entity';
+import { DatasourceChunksParallelHandlingProducer } from './services/producers/datasourceChunksParallelHandling.producer';
+import { join } from 'path';
+import { DatasourceChunkParallelHandlingConsumer } from './services/consumers/datasourceChunkParallelHandling.consumer';
 
 @Module({
   imports: [
@@ -42,6 +45,19 @@ import { HistoryUpdateSubscription } from '../accountSyncScheduler/entities/hist
       {
         name: SubIdAggregatorQueueName.DATASOURCE_HANDLING,
       },
+      {
+        name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
+        processors: [
+          {
+            concurrency: 5,
+            name: 'TRANSFER_CHUNK',
+            path: join(
+              __dirname,
+              'services/workers/collectTransfersDataChunk.worker.js',
+            ),
+          },
+        ],
+      },
     ),
     BullBoardModule.forFeature(
       {
@@ -52,13 +68,19 @@ import { HistoryUpdateSubscription } from '../accountSyncScheduler/entities/hist
         name: SubIdAggregatorQueueName.DATASOURCE_HANDLING,
         adapter: BullAdapter,
       },
+      {
+        name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
+        adapter: BullAdapter,
+      },
     ),
   ],
   providers: [
     AccountAggregationFlowConsumer,
     DatasourceHandlingConsumer,
+    DatasourceChunkParallelHandlingConsumer,
     DatasourceHandlingProducer,
     AccountAggregationFlowProducer,
+    DatasourceChunksParallelHandlingProducer,
     DataAggregatorService,
     BlockchainService,
     AccountService,

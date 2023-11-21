@@ -13,11 +13,11 @@ export class FindAccountTxHistoryWhereParams {
   @IsValidSubstrateAddress()
   publicKey?: string;
 
-  @Field(() => BlockchainTag, { nullable: true })
-  blockchainTag?: BlockchainTag;
+  @Field(() => [BlockchainTag!], { nullable: true })
+  blockchainTag?: BlockchainTag[];
 
-  @Field(() => TransactionKind, { nullable: true })
-  txKind?: TransactionKind;
+  @Field(() => [TransactionKind!], { nullable: true })
+  txKind?: TransactionKind[];
 }
 
 @InputType()
