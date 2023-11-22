@@ -25,31 +25,32 @@ services:
       POSTGRES_PASSWORD: SuperSecret!23
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres_aggregator_main
-#    volumes:
-#      - ./.docker-data/postgres:/var/lib/postgresql/data
+    #    volumes:
+    #      - ./.docker-data/postgres:/var/lib/postgresql/data
     networks:
       - aggregator_dev
-#  aggregator_app_nest:
-#    build:
-#      context: ./
-#      dockerfile: local.Dockerfile
-#    image: aggregator_app_nest
-#    container_name: aggregator_app_nest
-#    depends_on:
-#      - aggregator_queue_redis
-#      - aggregator_main_pg_db
-#    environment:
-#      AGGREGATOR_DB_HOST: aggregator_main_pg_db
-#      AGGREGATOR_DB_PORT: 5432
-#      AGGREGATOR_REDIS_HOST: aggregator_queue_redis
-#      AGGREGATOR_REDIS_PORT: 6379
-#      AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: 30000
-#      APP_PORT: 8080
-#      NODE_ENV: development
-#    ports:
-#      - '8080:8080'
-#    volumes:
-#      - ./:/app
-#      - /app/node_modules
-#    networks:
-#      - aggregator_dev
+
+  aggregator_app_nest:
+    build:
+      context: ./
+      dockerfile: local.Dockerfile
+    image: aggregator_app_nest
+    container_name: aggregator_app_nest
+    depends_on:
+      - aggregator_queue_redis
+      - aggregator_main_pg_db
+    environment:
+      AGGREGATOR_DB_HOST: aggregator_main_pg_db
+      AGGREGATOR_DB_PORT: 5432
+      AGGREGATOR_REDIS_HOST: aggregator_queue_redis
+      AGGREGATOR_REDIS_PORT: 6379
+      AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: 30000
+      APP_PORT: 8080
+      NODE_ENV: development
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - aggregator_dev

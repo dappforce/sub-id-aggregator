@@ -49,7 +49,7 @@ import { DatasourceChunkParallelHandlingConsumer } from './services/consumers/da
         name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
         processors: [
           {
-            concurrency: 5,
+            concurrency: 100,
             name: 'TRANSFER_CHUNK',
             path: join(
               __dirname,
