@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: aggregation-<BRANCH>
+  name: aggregation-<BRANCH>
+  namespace: sub-id
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aggregation-<BRANCH>
+  template:
+    metadata:
+      labels:
+        app: aggregation-<BRANCH>
+      name: aggregation-<BRANCH>
+    spec:
+      initContainers:
+        - name: db-deployer
+          image: postgres:14.1-alpine
+          command: ["/bin/bash"]
+          args: ["/opt/subscial/db-scripts/db-creation.sh"]
+          envFrom:
+            - configMapRef:
+                name: aggregation-<BRANCH>-env
+            - secretRef:
+                name: aggregation-service-secret
+          volumeMounts:
+            - name: db-creation-script
+              mountPath: /opt/subscial/db-scripts
+              readOnly: false
+      containers:
+        - image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          name: aggregation-service
+          ports:
+          - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: aggregation-<BRANCH>-env
+            - secretRef:
+                name: aggregation-service-secret
+      imagePullSecrets:
+      - name: dockerhub
+      restartPolicy: Always
+      volumes:
+        - name: db-creation-script
+          configMap:
+            name: db-<BRANCH>-env

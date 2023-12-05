@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: aggregation
+  name: aggregation
+  namespace: sub-id
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aggregation
+  template:
+    metadata:
+      labels:
+        app: aggregation
+      name: aggregation
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - aggregation
+            topologyKey: kubernetes.io/hostname
+      containers:
+        - image: <IMAGE>
+          imagePullPolicy: IfNotPresent
+          name: aggregation-service
+          ports:
+          - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: aggregation-env
+            - secretRef:
+                name: aggregation-service-secret
+      imagePullSecrets:
+      - name: dockerhub
+      restartPolicy: Always
