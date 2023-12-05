@@ -1,0 +1,97 @@
+name: Build and deploy aggregation service to prod
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  aggregation_build:
+    name: build & Push aggregation Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Prepare
+        id: prep
+        run: |
+          echo "image=dappforce/subsocial-aggregation:${{ env.name }}-$(echo $GITHUB_SHA | head -c7)" >> $GITHUB_ENV
+
+      - name: Set up Docker context for buildx
+        id: buildx-context
+        run: |
+           docker context create builders
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+        with:
+          endpoint: builders
+          version: latest
+
+      - name: Login to DockerHub
+        uses: docker/login-action@master
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-single-buildx
+
+      - name: Build docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          builder: ${{ steps.buildx.outputs.name }}
+          file: ./docker/Dockerfile
+          push: true
+          tags: |
+            ${{ env.image }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  aggregation_deploy:
+    name: aggregation_deploy
+    needs: aggregation_build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "name=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+        id: extract_branch
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN_PROD }}
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
+
+      - name: Update docker image name
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-aggregation:'${TAG}'|' $GITHUB_WORKSPACE/deployment/prod/core/deploy.yaml
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: |
+            kubectl apply -f $GITHUB_WORKSPACE/deployment/prod/core/all.yaml
+            kubectl apply -f $GITHUB_WORKSPACE/deployment/prod/core/deploy.yaml
+
+      - name: Verify deployment
+        run: kubectl -n sub-id rollout status deployment/aggregation
