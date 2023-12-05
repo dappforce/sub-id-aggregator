@@ -31,7 +31,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: aggregation.subsocial.network
+    - host: tx-aggregation.subsocial.network
       http:
         paths:
           - backend:
@@ -44,8 +44,8 @@ spec:
 
   tls:
     - hosts:
-        - aggregation.subsocial.network
-      secretName: subsocial-ssl
+        - tx-aggregation.subsocial.network
+      secretName: subsocial-ssl2
 
 ---
 apiVersion: v1
