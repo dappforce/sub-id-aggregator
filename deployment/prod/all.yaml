@@ -54,7 +54,7 @@ metadata:
   name: aggregation-env
   namespace: sub-id
 data:
-  AGGREGATOR_DB_DATABASE: 'aggregator_pool'
+  AGGREGATOR_DB_DATABASE: 'aggregation_pool'
   AGGREGATOR_REDIS_HOST: 'redis-aggregation-master.default'
   AGGREGATOR_REDIS_PREFIX: 'aggregator_queue'
   AGGREGATOR_REDIS_PORT: '6379'
