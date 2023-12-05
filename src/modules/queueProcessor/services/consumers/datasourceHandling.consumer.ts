@@ -33,30 +33,30 @@ export class DatasourceHandlingConsumer {
     return {};
   }
 
-  @Process({
-    name: 'TRANSFER_CHUNK',
-    concurrency: 200,
-  })
-  async collectAccountTransfersChunk(
-    job: Job<CollectEventDataChunkFromDataSourceInput>,
-  ) {
-    await job.takeLock();
-
-    try {
-      const result = await this.aggregationHelper.collectTransferEventDataChunk(
-        job.data,
-      );
-
-      await job.releaseLock();
-      await job.moveToCompleted(JSON.stringify(result), true);
-    } catch (e) {
-      await job.releaseLock();
-      await job.moveToFailed({
-        message: (e as Error).message || 'Something went wrong.',
-      });
-    }
-    return {};
-  }
+  // @Process({
+  //   name: 'TRANSFER_CHUNK',
+  //   concurrency: 200,
+  // })
+  // async collectAccountTransfersChunk(
+  //   job: Job<CollectEventDataChunkFromDataSourceInput>,
+  // ) {
+  //   await job.takeLock();
+  //
+  //   try {
+  //     const result = await this.aggregationHelper.collectTransferEventDataChunk(
+  //       job.data,
+  //     );
+  //
+  //     await job.releaseLock();
+  //     await job.moveToCompleted(JSON.stringify(result), true);
+  //   } catch (e) {
+  //     await job.releaseLock();
+  //     await job.moveToFailed({
+  //       message: (e as Error).message || 'Something went wrong.',
+  //     });
+  //   }
+  //   return {};
+  // }
 
   @Process({
     name: NativeTransactionKind.VOTE,

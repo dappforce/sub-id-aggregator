@@ -215,8 +215,22 @@ export class AggregationHelper {
     const responseBuffer: GetTransfersByAccountQuery['transfers'] = [];
     let index = 1;
 
+    const pubicKeyShort = `${inputData.publicKey.substring(
+      0,
+      5,
+    )}..${inputData.publicKey.substring(
+      inputData.publicKey.length - 5,
+      inputData.publicKey.length - 1,
+    )}`;
+
     const runQuery = async (offset: number = 0) => {
       const currentOffset = offset;
+      console.log(
+        `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${
+          inputData.chunkStartBlock
+        }/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
+      );
+
       const resp = await this.dataSourceUtils.getTransfersByAccount({
         limit: pageSize,
         offset: currentOffset,
@@ -225,16 +239,12 @@ export class AggregationHelper {
         blockNumber_lt: inputData.chunkEndBlock,
         queryUrl: inputData.sourceUrl,
       });
+      console.log(
+        `${pubicKeyShort} :: query COMPLETED :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} `,
+      );
       if (resp.transfers.length === 0) return;
       responseBuffer.push(...resp.transfers);
 
-      console.log(
-        `runQuery :: ${inputData.blockchainTag} :: ${
-          inputData.chunkStartBlock
-        }/${inputData.chunkEndBlock} :: index ${index} :: offset ${
-          currentOffset + pageSize
-        }`,
-      );
       index++;
       await runQuery(currentOffset + pageSize);
     };

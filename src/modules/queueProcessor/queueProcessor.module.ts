@@ -47,16 +47,16 @@ import { DatasourceChunkParallelHandlingConsumer } from './services/consumers/da
       },
       {
         name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
-        processors: [
-          {
-            concurrency: 5,
-            name: 'TRANSFER_CHUNK',
-            path: join(
-              __dirname,
-              'services/workers/collectTransfersDataChunk.worker.js',
-            ),
-          },
-        ],
+        // processors: [
+        //   {
+        //     concurrency: 101,
+        //     name: 'TRANSFER_CHUNK',
+        //     path: join(
+        //       __dirname,
+        //       'services/workers/collectTransfersDataChunk.worker.js',
+        //     ),
+        //   },
+        // ],
       },
     ),
     BullBoardModule.forFeature(

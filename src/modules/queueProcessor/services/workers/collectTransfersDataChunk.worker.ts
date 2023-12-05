@@ -19,6 +19,14 @@ export default async function (job: Job, cb: DoneCallback) {
 
     const runQuery = async (offset: number = 0) => {
       const currentOffset = offset;
+      console.log(
+        `runQuery started :: ${inputData.blockchainTag} :: ${
+          inputData.chunkStartBlock
+        }/${inputData.chunkEndBlock} :: index ${index} :: offset ${
+          currentOffset + pageSize
+        }`,
+      );
+
       const resp = await dataSourceUtils.getTransfersByAccount({
         limit: pageSize,
         offset: currentOffset,
@@ -31,7 +39,7 @@ export default async function (job: Job, cb: DoneCallback) {
       responseBuffer.push(...resp.transfers);
 
       console.log(
-        `runQuery :: ${inputData.blockchainTag} :: ${
+        `runQuery completed :: ${inputData.blockchainTag} :: ${
           inputData.chunkStartBlock
         }/${inputData.chunkEndBlock} :: index ${index} :: offset ${
           currentOffset + pageSize

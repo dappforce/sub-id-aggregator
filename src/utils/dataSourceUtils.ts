@@ -60,9 +60,9 @@ export class DataSourceUtils {
   }
 
   async getTransfersByAccount(data: GetTransfersByAccountArgs) {
-    console.log(
-      `request started :: ${data.blockNumber_gt}/${data.blockNumber_lt}`,
-    );
+    // console.log(
+    //   `request started :: ${data.blockNumber_gt}/${data.blockNumber_lt}`,
+    // );
     const res = await this.requestWithRetry<GetTransfersByAccountQuery>(
       this.squidQueryRequest<GetTransfersByAccountQuery, QueryTransfersArgs>(
         {

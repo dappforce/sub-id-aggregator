@@ -25,10 +25,13 @@ export class DatasourceChunksParallelHandlingProducer {
           'TRANSFER_CHUNK',
           requestData,
           {
-            attempts: 20,
+            attempts: 5,
+            timeout: 60 * 1000,
             jobId: crypto.randomUUID(),
-            removeOnComplete: false,
+            removeOnComplete: true,
             removeOnFail: false,
+            stackTraceLimit: 100,
+
           },
         );
 

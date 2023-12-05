@@ -1,0 +1,23 @@
+---
+global:
+  storageClass: "do-block-storage-retain"
+
+architecture: standalone
+
+image:
+  tag: 6.2-debian-11
+
+auth:
+  enabled: true
+  existingSecret: "redis-secret"
+
+metrics:
+  enabled: true
+
+  serviceMonitor:
+    enabled: true
+    namespace: "monitoring"
+    interval: 30s
+    additionalLabels:
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 37.2.0

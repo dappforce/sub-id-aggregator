@@ -5,6 +5,13 @@ import { SharedBullAsyncConfiguration } from '@nestjs/bull/dist/interfaces';
 export default {
   inject: [AppConfig],
   useFactory: (config: AppConfig) => {
+
+    console.log('config.AGGREGATOR_REDIS_HOST - ', config.AGGREGATOR_REDIS_HOST)
+    console.log('config.AGGREGATOR_REDIS_PORT - ', config.AGGREGATOR_REDIS_PORT)
+    console.log('config.AGGREGATOR_REDIS_PASSWORD - ', config.AGGREGATOR_REDIS_PASSWORD)
+    console.log('config.AGGREGATOR_REDIS_PREFIX - ', config.AGGREGATOR_REDIS_PREFIX)
+
+
     const getClient = () => {
       const client = new Redis({
         host: config.AGGREGATOR_REDIS_HOST,
@@ -63,7 +70,7 @@ export default {
       settings: {
         lockDuration: 20000, // Check for stalled jobs each 2 min
         lockRenewTime: 10000,
-        stalledInterval: 20 * 60 * 1000,
+        stalledInterval: 5 * 60 * 1000,
         maxStalledCount: 1,
       },
     };

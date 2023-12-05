@@ -1,0 +1,33 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-hub-<BRANCH>-job
+spec:
+  backoffLimit: 6
+  activeDeadlineSeconds: 5000
+  template:
+    metadata:
+      name: data-hub-<BRANCH>-job
+    spec:
+      imagePullSecrets:
+      - name: dockerhub
+      restartPolicy: OnFailure
+      containers:
+        - name: db-destroyer
+          image: postgres:14.1-alpine
+          command: ["/bin/bash"]
+          args: ["/opt/subscial/db-scripts/db-drop.sh"]
+          envFrom:
+            - configMapRef:
+                name: data-hub-<BRANCH>-env
+            - secretRef:
+                name: data-hub-service-secret
+          volumeMounts:
+            - name: db-remove-script
+              mountPath: /var/opt/subscial/db-scripts
+              readOnly: false
+      volumes:
+        - name: db-remove-script
+          configMap:
+            name: db-<BRANCH>-env
