@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: aggregation
+  name: aggregation
+  namespace: sub-id
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: aggregation
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aggregation
+  namespace: sub-id
+  annotations:
+    ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.ingress.kubernetes.io/from-to-www-redirect: 'true'
+    nginx.org/client-max-body-size: '10m'
+    nginx.ingress.kubernetes.io/proxy-body-size: '10m'
+    nginx.ingress.kubernetes.io/client-max-body-size: '10m'
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: aggregation.subsocial.network
+      http:
+        paths:
+          - backend:
+              service:
+                name: aggregation
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
+
+  tls:
+    - hosts:
+        - aggregation.subsocial.network
+      secretName: subsocial-ssl
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aggregationenv
+  namespace: sub-id
+data:
+  AGGREGATOR_DB_DATABASE: 'aggregator_pool'
+  AGGREGATOR_REDIS_HOST: 'redis-aggregation-master.default'
+  AGGREGATOR_REDIS_PREFIX: 'aggregator_queue'
+  AGGREGATOR_REDIS_PORT: '6379'
+  AGGREGATOR_REDIS_ENABLE_SSL: 'false'
+  AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: '60000'
+  AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE: '1000000'
+  DATA_SOURCE_GSQUID_MAIN_POLKADOT: 'https://squid.subsquid.io/gs-main-polkadot/graphql'
+  DATA_SOURCE_GSQUID_MAIN_KUSAMA: 'https://squid.subsquid.io/gs-main-kusama/graphql'
+  DATA_SOURCE_GSQUID_MAIN_MOONBEAM: 'https://squid.subsquid.io/gs-main-moonbeam/graphql'
+  DATA_SOURCE_GSQUID_MAIN_MOONRIVER: 'https://squid.subsquid.io/gs-main-moonriver/graphql'
+  DATA_SOURCE_GSQUID_MAIN_ASTAR: 'https://squid.subsquid.io/gs-main-astar/graphql'
+  NODE_ENV: 'production'
+  APP_PORT: '3000'
