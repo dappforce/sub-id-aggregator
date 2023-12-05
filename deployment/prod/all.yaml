@@ -51,7 +51,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: aggregationenv
+  name: aggregation-env
   namespace: sub-id
 data:
   AGGREGATOR_DB_DATABASE: 'aggregator_pool'
