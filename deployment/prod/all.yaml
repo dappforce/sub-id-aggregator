@@ -31,7 +31,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: aggregation.subsocial.network
+    - host: tx-aggregation.subsocial.network
       http:
         paths:
           - backend:
@@ -44,17 +44,17 @@ spec:
 
   tls:
     - hosts:
-        - aggregation.subsocial.network
-      secretName: subsocial-ssl
+        - tx-aggregation.subsocial.network
+      secretName: subsocial-ssl2
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: aggregationenv
+  name: aggregation-env
   namespace: sub-id
 data:
-  AGGREGATOR_DB_DATABASE: 'aggregator_pool'
+  AGGREGATOR_DB_DATABASE: 'aggregation_pool'
   AGGREGATOR_REDIS_HOST: 'redis-aggregation-master.default'
   AGGREGATOR_REDIS_PREFIX: 'aggregator_queue'
   AGGREGATOR_REDIS_PORT: '6379'

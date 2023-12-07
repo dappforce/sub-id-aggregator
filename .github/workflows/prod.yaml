@@ -86,12 +86,12 @@ jobs:
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ${{ secrets.K8S_PROD }}
 
       - name: Update docker image name
-        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-aggregation:'${TAG}'|' $GITHUB_WORKSPACE/deployment/prod/core/deploy.yaml
+        run: TAG=${{ env.name }}-$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|dappforce/subsocial-aggregation:'${TAG}'|' $GITHUB_WORKSPACE/deployment/prod/deploy.yaml
 
       - name: Deploy to DigitalOcean Kubernetes
         run: |
-            kubectl apply -f $GITHUB_WORKSPACE/deployment/prod/core/all.yaml
-            kubectl apply -f $GITHUB_WORKSPACE/deployment/prod/core/deploy.yaml
+            kubectl apply -f $GITHUB_WORKSPACE/deployment/prod/all.yaml
+            kubectl apply -f $GITHUB_WORKSPACE/deployment/prod/deploy.yaml
 
       - name: Verify deployment
         run: kubectl -n sub-id rollout status deployment/aggregation
