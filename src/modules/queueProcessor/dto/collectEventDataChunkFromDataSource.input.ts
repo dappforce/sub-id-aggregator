@@ -8,4 +8,5 @@ export class CollectEventDataChunkFromDataSourceInput {
   sourceUrl: string;
   chunkStartBlock: number;
   chunkEndBlock: number | null;
+  onDemand?: boolean
 }

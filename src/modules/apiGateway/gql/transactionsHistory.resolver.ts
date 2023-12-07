@@ -27,7 +27,10 @@ export class TransactionsHistoryResolver {
     @Args('args')
     args: EnqueueAccountAggregationJobInput,
   ): Promise<RefreshTxHistoryResponseDto> {
-    await this.accountAggregationFlowProducer.enqueueTask(args);
+    await this.accountAggregationFlowProducer.enqueueTask({
+      ...args,
+      jobOptions: { ...args, priority: 1 },
+    });
 
     return { success: true };
   }

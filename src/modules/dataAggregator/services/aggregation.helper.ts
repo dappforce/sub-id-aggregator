@@ -96,7 +96,7 @@ export class AggregationHelper {
 
     const aggregationChunkResults = await Promise.allSettled(
       chunksRanges.map((range) => {
-        return this.datasourceChunksParallelHandlingProducer.enqueueAndWaitCollectTransferEventDataChunk(
+        return this.datasourceChunksParallelHandlingProducer.enqueueAndWaitCollectTransferEventDataChunkJobProducer(
           {
             blockchainTag: inputData.blockchainTag,
             event: inputData.event,
@@ -104,6 +104,7 @@ export class AggregationHelper {
             sourceUrl: inputData.sourceUrl,
             chunkStartBlock: range[0],
             chunkEndBlock: range[1],
+            onDemand: inputData.onDemand,
           },
         );
       }),
@@ -226,9 +227,7 @@ export class AggregationHelper {
     const runQuery = async (offset: number = 0) => {
       const currentOffset = offset;
       console.log(
-        `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${
-          inputData.chunkStartBlock
-        }/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
+        `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
       );
 
       const resp = await this.dataSourceUtils.getTransfersByAccount({
