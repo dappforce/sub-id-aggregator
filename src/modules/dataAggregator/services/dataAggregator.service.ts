@@ -28,6 +28,7 @@ export class DataAggregatorService {
     const txAccount = await this.accountService.getOrCreateAccount(
       publicKeyDecorated,
     );
+    const isJobOnDemand = job.name.indexOf('ON_DEMAND') >= 0;
 
     const aggregationResultByChain = await Promise.allSettled(
       this.blockchainService.blockchainDataSourceConfigs
@@ -41,13 +42,14 @@ export class DataAggregatorService {
               sourceUrl: chainData.events[eventName],
               latestProcessedBlock:
                 txAccount.latestProcessedBlock[chainData.tag][eventName],
+              onDemand: isJobOnDemand,
             });
           }
           return chainEvents;
         })
         .flat()
         .map((collectReqInput) =>
-          this.datasourceHandlingProducer.collectEventDataFromDataSource(
+          this.datasourceHandlingProducer.collectEventDataFromDataSourceJobProducer(
             collectReqInput,
           ),
         ),

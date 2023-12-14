@@ -69,6 +69,7 @@ export class AccountSyncSchedulerService {
       jobName: SubIdAggregatorJobName.REFRESH_TX_HISTORY_FOR_ACCOUNT_SCHEDULED,
       jobOptions: {
         jobId: this.getHistoryRenewJobId(decoratedPublicKey),
+        priority: 2,
         repeat: {
           every: this.appConfig.AGGREGATOR_HISTORY_RENEW_INTERVAL_MS,
           limit: 120_960, // 7 days with interval 5 sec

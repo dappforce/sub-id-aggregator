@@ -19,10 +19,18 @@ export enum TransactionKind {
   REWARD = 'REWARD',
 }
 
+export enum TransferDirection {
+  FROM = 'FROM',
+  TO = 'TO',
+}
+
 export enum NativeTransactionKind {
   TRANSFER = 'TRANSFER',
   VOTE = 'VOTE',
   REWARD = 'REWARD',
 }
 
-
+export enum DataSourceProviders {
+  SUBSQUID = 'SUBSQUID',
+  SUBQUERY = 'SUBQUERY',
+}

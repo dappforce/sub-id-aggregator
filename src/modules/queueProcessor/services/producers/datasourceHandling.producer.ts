@@ -24,7 +24,7 @@ export class DatasourceHandlingProducer {
     return crypto.randomUUID();
   }
 
-  async collectEventDataFromDataSource(
+  async collectEventDataFromDataSourceJobProducer(
     requestData: CollectEventDataFromDataSourceInput,
   ) {
     return new Promise<CollectEventDataFromDataSourceResponse>(
@@ -37,18 +37,9 @@ export class DatasourceHandlingProducer {
             jobId: this.getJobId(requestData),
             removeOnComplete: true,
             removeOnFail: false,
+            priority: requestData.onDemand ? 1 : 2,
           },
         );
-
-        // const logsInterval = setInterval(async () => {
-        //   const logs = await this.datasourceHandlingQueue.getJobLogs(job.id);
-        //   if (logs.count !== 0) {
-        //     console.log(`Job ${job.name}/${job.id}`);
-        //     console.dir(logs.logs, {
-        //       depth: null,
-        //     });
-        //   }
-        // }, 500);
 
         const jobResult = await job.finished();
 
@@ -59,30 +50,30 @@ export class DatasourceHandlingProducer {
       },
     );
   }
-
-  async enqueueAndWaitCollectTransferEventDataChunk(
-    requestData: CollectEventDataChunkFromDataSourceInput,
-  ) {
-    return new Promise<{
-      jobResult: CollectTransfersChunkHandlerResponseResponse;
-    }>(async (resolve, reject) => {
-      const job = await this.datasourceHandlingQueue.add(
-        'TRANSFER_CHUNK',
-        requestData,
-        {
-          attempts: 20,
-          jobId: crypto.randomUUID(),
-          removeOnComplete: false,
-          removeOnFail: false,
-        },
-      );
-
-      const jobResult = await job.finished();
-
-      // TODO add result check
-      // TODO Add a watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
-
-      resolve({ jobResult: JSON.parse(jobResult) });
-    });
-  }
+  //
+  // async enqueueAndWaitCollectTransferEventDataChunkJobProducer(
+  //   requestData: CollectEventDataChunkFromDataSourceInput,
+  // ) {
+  //   return new Promise<{
+  //     jobResult: CollectTransfersChunkHandlerResponseResponse;
+  //   }>(async (resolve, reject) => {
+  //     const job = await this.datasourceHandlingQueue.add(
+  //       'TRANSFER_CHUNK',
+  //       requestData,
+  //       {
+  //         attempts: 20,
+  //         jobId: crypto.randomUUID(),
+  //         removeOnComplete: false,
+  //         removeOnFail: false,
+  //       },
+  //     );
+  //
+  //     const jobResult = await job.finished();
+  //
+  //     // TODO add result check
+  //     // TODO Add a watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
+  //
+  //     resolve({ jobResult: JSON.parse(jobResult) });
+  //   });
+  // }
 }

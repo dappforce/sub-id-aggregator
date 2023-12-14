@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 import { TransferOrderByInput } from './gsquid-main-query';
 
-export const GET_TRANSFERS_BY_ACCOUNT = gql`
-  query GetTransfersByAccount(
+export const GET_TRANSFERS_BY_ACCOUNT_SUBSQUID = gql`
+  query GetTransfersByAccountSubSquid(
     $where: TransferWhereInput!
     $limit: Int!
     $offset: Int! #    $orderBy: [TransferOrderByInput!]!
@@ -32,8 +32,8 @@ export const GET_TRANSFERS_BY_ACCOUNT = gql`
   }
 `;
 
-export const GET_TRANSFERS_COUNT_BY_ACCOUNT = gql`
-  query GetTransfersCountByAccount(
+export const GET_TRANSFERS_COUNT_BY_ACCOUNT_SUBSQUID = gql`
+  query GetTransfersCountByAccountSubSquid(
     $where: TransferWhereInput!
     $orderBy: [TransferOrderByInput!]!
   ) {
@@ -43,10 +43,10 @@ export const GET_TRANSFERS_COUNT_BY_ACCOUNT = gql`
   }
 `;
 
-export const GET_MAIN_SQUID_STATUS = gql`
-    query GetMainSquidStatus {
-        squidStatus {
-            height
-        }
+export const GET_MAIN_SQUID_STATUS_SUBSQUID = gql`
+  query GetMainSquidStatusSubSquid {
+    squidStatus {
+      height
     }
+  }
 `;

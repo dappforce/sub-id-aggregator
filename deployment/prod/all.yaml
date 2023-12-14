@@ -61,10 +61,20 @@ data:
   AGGREGATOR_REDIS_ENABLE_SSL: 'false'
   AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: '60000'
   AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE: '1000000'
-  DATA_SOURCE_GSQUID_MAIN_POLKADOT: 'https://squid.subsquid.io/gs-main-polkadot/graphql'
-  DATA_SOURCE_GSQUID_MAIN_KUSAMA: 'https://squid.subsquid.io/gs-main-kusama/graphql'
-  DATA_SOURCE_GSQUID_MAIN_MOONBEAM: 'https://squid.subsquid.io/gs-main-moonbeam/graphql'
-  DATA_SOURCE_GSQUID_MAIN_MOONRIVER: 'https://squid.subsquid.io/gs-main-moonriver/graphql'
-  DATA_SOURCE_GSQUID_MAIN_ASTAR: 'https://squid.subsquid.io/gs-main-astar/graphql'
+
+  DATA_SOURCE__SUBSQUID__POLKADOT__TRANSFER: 'https://squid.subsquid.io/gs-main-polkadot/graphql'
+  DATA_SOURCE__SUBSQUID__KUSAMA__TRANSFER: 'https://squid.subsquid.io/gs-main-kusama/graphql'
+  DATA_SOURCE__SUBSQUID__MOONBEAM__TRANSFER: 'https://squid.subsquid.io/gs-main-moonbeam/graphql'
+  DATA_SOURCE__SUBSQUID__MOONRIVER__TRANSFER: 'https://squid.subsquid.io/gs-main-moonriver/graphql'
+  DATA_SOURCE__SUBSQUID__ASTAR__TRANSFER: 'https://squid.subsquid.io/gs-main-astar/graphql'
+
+  DATA_SOURCE__SUBQUERY__POLKADOT__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-polkadot'
+  DATA_SOURCE__SUBQUERY__KUSAMA__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-kusama'
+  DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonbeam'
+  DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonriver'
+  DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar'
+
+  DATA_SOURCE_PROVIDER_TRANSFER: 'SUBQUERY'
+
   NODE_ENV: 'production'
   APP_PORT: '3000'

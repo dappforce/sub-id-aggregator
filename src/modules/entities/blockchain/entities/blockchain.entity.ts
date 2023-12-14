@@ -18,6 +18,14 @@ export class Blockchain {
   @Field(() => String, { nullable: false })
   info: string;
 
+  @Column('text', { array: true, default: [], nullable: true })
+  @Field(() => [String], { nullable: true, defaultValue: [] })
+  symbols: string[];
+
+  @Column({ nullable: true })
+  @Field(() => Int, { nullable: true })
+  prefix?: number;
+
   @Column({
     type: 'enum',
     enum: BlockchainTag,

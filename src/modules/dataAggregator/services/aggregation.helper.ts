@@ -2,18 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { BlockchainService } from '../../entities/blockchain/blockchain.service';
 import { DatasourceHandlingProducer } from '../../queueProcessor/services/producers/datasourceHandling.producer';
 import { CollectEventDataFromDataSourceInput } from '../../queueProcessor/dto/collectEventDataFromDataSource.input';
-import { DataSourceUtils } from '../../../utils/dataSourceUtils';
 import { TransferNativeService } from '../../entities/transferNative/transferNative.service';
-import {
-  GetTransfersByAccountQuery,
-  Transfer as SquidTransfer,
-  TransferDirection,
-} from '../../../utils/graphQl/gsquidMain/gsquid-main-query';
 import { TransferNative } from '../../entities/transferNative/entities/transferNative.entity';
 import { Transaction } from '../../entities/transaction/entities/transaction.entity';
 import {
   NativeTransactionKind,
   TransactionKind,
+  TransferDirection,
 } from '../../../constants/common';
 import { AccountTransaction } from '../../entities/accountTransaction/entities/accountTransaction.entity';
 import { AccountService } from '../../entities/account/account.service';
@@ -27,6 +22,8 @@ import { BlockchainTag } from '../../../constants/blockchain';
 import { CollectTransfersChunkHandlerResponseResponse } from '../dto/collectTransfersChunkHandlerResponse.response';
 import { AppConfig } from '../../../config.module';
 import { DatasourceChunksParallelHandlingProducer } from '../../queueProcessor/services/producers/datasourceChunksParallelHandling.producer';
+import { DataSourceUtils } from '../../../utils/dataSources/dataSourceUtils';
+import { TransferDecoratedDto } from '../dto/transfersByAccountDecorated.dto';
 
 @Injectable()
 export class AggregationHelper {
@@ -84,19 +81,19 @@ export class AggregationHelper {
   async collectTransferEventData(
     inputData: CollectEventDataFromDataSourceInput,
   ): Promise<CollectEventDataHandlerResponse> {
-    const sourceSquidStatus =
-      await this.dataSourceUtils.getMainGiantSquidStatus({
+    const sourceIndexerStatus =
+      await this.dataSourceUtils.getIndexerLastProcessedHeight({
         queryUrl: inputData.sourceUrl,
       });
 
     let chunksRanges = this.getChunksRanges({
       latestProcessedBlock: inputData.latestProcessedBlock,
-      totalBlocks: sourceSquidStatus.squidStatus.height,
+      totalBlocks: sourceIndexerStatus.height,
     });
 
     const aggregationChunkResults = await Promise.allSettled(
       chunksRanges.map((range) => {
-        return this.datasourceChunksParallelHandlingProducer.enqueueAndWaitCollectTransferEventDataChunk(
+        return this.datasourceChunksParallelHandlingProducer.enqueueAndWaitCollectTransferEventDataChunkJobProducer(
           {
             blockchainTag: inputData.blockchainTag,
             event: inputData.event,
@@ -104,13 +101,14 @@ export class AggregationHelper {
             sourceUrl: inputData.sourceUrl,
             chunkStartBlock: range[0],
             chunkEndBlock: range[1],
+            onDemand: inputData.onDemand,
           },
         );
       }),
     );
 
     let lastBlock = 0;
-    let totalFetchedData: GetTransfersByAccountQuery['transfers'] = [];
+    let totalFetchedData: TransferDecoratedDto[] = [];
     for (const aggregationResult of aggregationChunkResults) {
       if (aggregationResult.status !== 'fulfilled') continue;
       totalFetchedData.push(
@@ -132,11 +130,13 @@ export class AggregationHelper {
 
     for (const transferData of totalFetchedData) {
       const nativeTransferEntity = new TransferNative({
-        id: transferData.id,
+        id: transferData.transfer.id,
         blockNumber: transferData.transfer.blockNumber,
         extrinsicHash: transferData.transfer.extrinsicHash,
+        eventIndex: transferData.transfer.eventIndex ?? null,
         timestamp: new Date(transferData.transfer.timestamp),
         amount: BigInt(transferData.transfer.amount),
+        fee: transferData.transfer.fee ? BigInt(transferData.transfer.fee) : 0n,
         success: transferData.transfer.success,
         from: await this.accountService.getOrCreateAccount(
           transferData.transfer.from.publicKey,
@@ -144,9 +144,10 @@ export class AggregationHelper {
         to: await this.accountService.getOrCreateAccount(
           transferData.transfer.to.publicKey,
         ),
+        blockchain,
       });
       const txKind =
-        transferData.direction === TransferDirection.From
+        transferData.direction === TransferDirection.FROM
           ? TransactionKind.TRANSFER_FROM
           : TransactionKind.TRANSFER_TO;
 
@@ -157,7 +158,7 @@ export class AggregationHelper {
       });
 
       const accountTransaction = new AccountTransaction({
-        id: `${this.commonUtils.getStringShortcut(inputData.publicKey)}-${
+        id: `${this.commonUtils.getStringEndingShortcut(inputData.publicKey)}-${
           transactionEntity.id
         }`,
         ownerPublicKey: txAccount.id,
@@ -203,7 +204,7 @@ export class AggregationHelper {
       latestProcessedBlock:
         lastBlock ||
         inputData.latestProcessedBlock ||
-        sourceSquidStatus.squidStatus.height - 300,
+        sourceIndexerStatus.height - 300,
       action: inputData.event,
       blockchainTag: inputData.blockchainTag,
     };
@@ -212,7 +213,7 @@ export class AggregationHelper {
   async collectTransferEventDataChunk(
     inputData: CollectEventDataChunkFromDataSourceInput,
   ): Promise<CollectTransfersChunkHandlerResponseResponse> {
-    const responseBuffer: GetTransfersByAccountQuery['transfers'] = [];
+    const responseBuffer: TransferDecoratedDto[] = [];
     let index = 1;
 
     const pubicKeyShort = `${inputData.publicKey.substring(
@@ -226,12 +227,11 @@ export class AggregationHelper {
     const runQuery = async (offset: number = 0) => {
       const currentOffset = offset;
       console.log(
-        `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${
-          inputData.chunkStartBlock
-        }/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
+        `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
       );
 
       const resp = await this.dataSourceUtils.getTransfersByAccount({
+        blockchainTag: inputData.blockchainTag,
         limit: pageSize,
         offset: currentOffset,
         publicKey: inputData.publicKey,

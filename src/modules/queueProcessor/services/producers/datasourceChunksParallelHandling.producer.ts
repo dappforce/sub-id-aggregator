@@ -14,7 +14,7 @@ export class DatasourceChunksParallelHandlingProducer {
     private datasourceChunksParallelHandlingQueue: Queue,
   ) {}
 
-  async enqueueAndWaitCollectTransferEventDataChunk(
+  async enqueueAndWaitCollectTransferEventDataChunkJobProducer(
     requestData: CollectEventDataChunkFromDataSourceInput,
   ) {
     return new Promise<{
@@ -31,7 +31,7 @@ export class DatasourceChunksParallelHandlingProducer {
             removeOnComplete: true,
             removeOnFail: false,
             stackTraceLimit: 100,
-
+            priority: requestData.onDemand ? 1 : 2,
           },
         );
 

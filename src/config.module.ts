@@ -1,9 +1,10 @@
 import { Global, Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { transformAndValidateSync } from 'class-transformer-validator';
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 import * as dotenv from 'dotenv';
 import { Transform } from 'class-transformer';
+import { DataSourceProviders } from './constants/common';
 
 dotenv.config({ path: `${__dirname}/../.env.local` });
 
@@ -39,21 +40,6 @@ export class AppConfig {
   @IsNotEmpty()
   readonly AGGREGATOR_REDIS_ENABLE_SSL: boolean;
 
-  @IsNotEmpty()
-  readonly DATA_SOURCE_GSQUID_MAIN_POLKADOT: string;
-
-  @IsNotEmpty()
-  readonly DATA_SOURCE_GSQUID_MAIN_KUSAMA: string;
-
-  @IsNotEmpty()
-  readonly DATA_SOURCE_GSQUID_MAIN_MOONBEAM: string;
-
-  @IsNotEmpty()
-  readonly DATA_SOURCE_GSQUID_MAIN_MOONRIVER: string;
-
-  @IsNotEmpty()
-  readonly DATA_SOURCE_GSQUID_MAIN_ASTAR: string;
-
   @Transform(({ value }: { value: string }) => +value)
   @IsNotEmpty()
   readonly AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: number;
@@ -64,6 +50,46 @@ export class AppConfig {
 
   @IsNotEmpty()
   readonly NODE_ENV: string;
+
+  /**
+   * === DATA SOURCES ===
+   */
+
+  @IsNotEmpty()
+  @Transform(({ value }) => ('' + value).toUpperCase())
+  @IsEnum(DataSourceProviders)
+  readonly DATA_SOURCE_PROVIDER_TRANSFER: DataSourceProviders;
+
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBSQUID__POLKADOT__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBSQUID__KUSAMA__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBSQUID__MOONBEAM__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBSQUID__MOONRIVER__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBSQUID__ASTAR__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBQUERY__POLKADOT__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBQUERY__KUSAMA__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: string;
 }
 
 @Global()

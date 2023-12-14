@@ -7,4 +7,5 @@ export class CollectEventDataFromDataSourceInput {
   publicKey: string;
   sourceUrl: string;
   latestProcessedBlock: number;
+  onDemand?: boolean;
 }

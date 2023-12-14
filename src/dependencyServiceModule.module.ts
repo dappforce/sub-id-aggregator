@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CryptoUtils } from './utils/cryptoUtils';
 import { CommonUtils } from './utils/commonUtils';
-import { DataSourceUtils } from './utils/dataSourceUtils';
+import { DataSourceUtils } from './utils/dataSources/dataSourceUtils';
 
 @Module({
   providers: [CryptoUtils, CommonUtils, DataSourceUtils],

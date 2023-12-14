@@ -1041,31 +1041,31 @@ export type WhereIdInput = {
   id: Scalars['String']['input'];
 };
 
-export type GetTransfersByAccountQueryVariables = Exact<{
+export type GetTransfersByAccountSubSquidQueryVariables = Exact<{
   where: TransferWhereInput;
   limit: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
 }>;
 
 
-export type GetTransfersByAccountQuery = { __typename?: 'Query', transfers: Array<{ __typename?: 'Transfer', id: string, direction?: TransferDirection | null, transfer?: { __typename?: 'NativeTransfer', amount: any, blockNumber: number, extrinsicHash?: string | null, id: string, success: boolean, timestamp: any, from: { __typename?: 'Account', publicKey: string }, to: { __typename?: 'Account', publicKey: string } } | null }> };
+export type GetTransfersByAccountSubSquidQuery = { __typename?: 'Query', transfers: Array<{ __typename?: 'Transfer', id: string, direction?: TransferDirection | null, transfer?: { __typename?: 'NativeTransfer', amount: any, blockNumber: number, extrinsicHash?: string | null, id: string, success: boolean, timestamp: any, from: { __typename?: 'Account', publicKey: string }, to: { __typename?: 'Account', publicKey: string } } | null }> };
 
-export type GetTransfersCountByAccountQueryVariables = Exact<{
+export type GetTransfersCountByAccountSubSquidQueryVariables = Exact<{
   where: TransferWhereInput;
   orderBy: Array<TransferOrderByInput> | TransferOrderByInput;
 }>;
 
 
-export type GetTransfersCountByAccountQuery = { __typename?: 'Query', transfersConnection: { __typename?: 'TransfersConnection', totalCount: number } };
+export type GetTransfersCountByAccountSubSquidQuery = { __typename?: 'Query', transfersConnection: { __typename?: 'TransfersConnection', totalCount: number } };
 
-export type GetMainSquidStatusQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMainSquidStatusQuery = { __typename?: 'Query', squidStatus?: { __typename?: 'SquidStatus', height?: number | null } | null };
+export type GetMainSquidStatusSubSquidQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export const GetTransfersByAccount = gql`
-    query GetTransfersByAccount($where: TransferWhereInput!, $limit: Int!, $offset: Int!) {
+export type GetMainSquidStatusSubSquidQuery = { __typename?: 'Query', squidStatus?: { __typename?: 'SquidStatus', height?: number | null } | null };
+
+
+export const GetTransfersByAccountSubSquid = gql`
+    query GetTransfersByAccountSubSquid($where: TransferWhereInput!, $limit: Int!, $offset: Int!) {
   transfers(where: $where, limit: $limit, offset: $offset) {
     id
     direction
@@ -1086,15 +1086,15 @@ export const GetTransfersByAccount = gql`
   }
 }
     `;
-export const GetTransfersCountByAccount = gql`
-    query GetTransfersCountByAccount($where: TransferWhereInput!, $orderBy: [TransferOrderByInput!]!) {
+export const GetTransfersCountByAccountSubSquid = gql`
+    query GetTransfersCountByAccountSubSquid($where: TransferWhereInput!, $orderBy: [TransferOrderByInput!]!) {
   transfersConnection(where: $where, orderBy: $orderBy) {
     totalCount
   }
 }
     `;
-export const GetMainSquidStatus = gql`
-    query GetMainSquidStatus {
+export const GetMainSquidStatusSubSquid = gql`
+    query GetMainSquidStatusSubSquid {
   squidStatus {
     height
   }

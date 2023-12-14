@@ -8,7 +8,6 @@ import { AccountService } from '../entities/account/account.service';
 import { Account } from '../entities/account/entities/account.entity';
 import { Blockchain } from '../entities/blockchain/entities/blockchain.entity';
 import { AggregationHelper } from './services/aggregation.helper';
-import { DataSourceUtils } from '../../utils/dataSourceUtils';
 import { TransferNativeService } from '../entities/transferNative/transferNative.service';
 import { TransactionService } from '../entities/transaction/transaction.service';
 import { AccountTransactionService } from '../entities/accountTransaction/accountTransaction.service';
@@ -18,6 +17,7 @@ import { BullModule } from '@nestjs/bull';
 import { SubIdAggregatorQueueName } from '../../constants/queues';
 import { Transaction } from '../entities/transaction/entities/transaction.entity';
 import { DatasourceChunksParallelHandlingProducer } from '../queueProcessor/services/producers/datasourceChunksParallelHandling.producer';
+import { DataSourceUtils } from '../../utils/dataSources/dataSourceUtils';
 
 @Module({
   imports: [

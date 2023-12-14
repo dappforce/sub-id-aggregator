@@ -6,6 +6,8 @@ type Blockchain {
   id: String!
   text: String!
   info: String!
+  symbols: [String!]
+  prefix: Int
   tag: BlockchainTag!
   decimal: Int!
   logo: String!
@@ -22,10 +24,13 @@ enum BlockchainTag {
 
 type TransferNative {
   id: String!
+  blockchain: Blockchain!
   blockNumber: Int!
   extrinsicHash: String
+  eventIndex: Int
   timestamp: DateTime!
   amount: BigInt!
+  fee: BigInt
   success: Boolean!
   from: Account!
   to: Account!
