@@ -5,13 +5,6 @@ import { SharedBullAsyncConfiguration } from '@nestjs/bull/dist/interfaces';
 export default {
   inject: [AppConfig],
   useFactory: (config: AppConfig) => {
-
-    console.log('config.AGGREGATOR_REDIS_HOST - ', config.AGGREGATOR_REDIS_HOST)
-    console.log('config.AGGREGATOR_REDIS_PORT - ', config.AGGREGATOR_REDIS_PORT)
-    console.log('config.AGGREGATOR_REDIS_PASSWORD - ', config.AGGREGATOR_REDIS_PASSWORD)
-    console.log('config.AGGREGATOR_REDIS_PREFIX - ', config.AGGREGATOR_REDIS_PREFIX)
-
-
     const getClient = () => {
       const client = new Redis({
         host: config.AGGREGATOR_REDIS_HOST,
