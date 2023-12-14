@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "codegen:gsquid-main-query": "graphql-codegen --require dotenv/config --config codegenConfig/codegen-gsquid-main-query.ts"
+    "codegen:gsquid-main-query": "graphql-codegen --require dotenv/config --config codegenConfig/codegen-gsquid-main-query.ts",
+    "codegen:subquery-nova-query": "graphql-codegen --require dotenv/config --config codegenConfig/codegen-subquery-nova-query.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.7.2",

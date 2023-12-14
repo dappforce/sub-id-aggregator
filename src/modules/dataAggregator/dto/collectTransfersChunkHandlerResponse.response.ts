@@ -1,5 +1,5 @@
-import { GetTransfersByAccountQuery } from '../../../utils/graphQl/gsquidMain/gsquid-main-query';
+import { TransferDecoratedDto } from './transfersByAccountDecorated.dto';
 
 export class CollectTransfersChunkHandlerResponseResponse {
-  fetchedChunkData: GetTransfersByAccountQuery['transfers'];
+  fetchedChunkData: TransferDecoratedDto[];
 }

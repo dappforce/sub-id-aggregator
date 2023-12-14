@@ -3,7 +3,7 @@ import {
   FindAccountTxHistoryOrderBy,
   NativeTransactionKind,
   QueryOrder,
-  TransactionKind,
+  TransactionKind, TransferDirection,
   VoteResult,
 } from '../../constants/common';
 import { BlockchainTag } from '../../constants/blockchain';
@@ -30,4 +30,8 @@ registerEnumType(NativeTransactionKind, {
 
 registerEnumType(BlockchainTag, {
   name: 'BlockchainTag',
+});
+
+registerEnumType(TransferDirection, {
+  name: 'TransferDirection',
 });

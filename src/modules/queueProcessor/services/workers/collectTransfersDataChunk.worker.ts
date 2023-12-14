@@ -1,7 +1,8 @@
 import { Job, DoneCallback } from 'bull';
-import { GetTransfersByAccountQuery } from '../../../../utils/graphQl/gsquidMain/gsquid-main-query';
-import { DataSourceUtils } from '../../../../utils/dataSourceUtils';
 import crypto from 'node:crypto';
+import { DataSourceUtils } from '../../../../utils/dataSources/dataSourceUtils';
+import { TransferDecoratedDto } from '../../../dataAggregator/dto/transfersByAccountDecorated.dto';
+import { AppConfig } from '../../../../config.module';
 
 export default async function (job: Job, cb: DoneCallback) {
   try {
@@ -12,9 +13,9 @@ export default async function (job: Job, cb: DoneCallback) {
     );
 
     const inputData = job.data;
-    const dataSourceUtils = new DataSourceUtils();
+    const dataSourceUtils = new DataSourceUtils(new AppConfig());
 
-    const responseBuffer: GetTransfersByAccountQuery['transfers'] = [];
+    const responseBuffer: TransferDecoratedDto[] = [];
     let index = 1;
 
     const runQuery = async (offset: number = 0) => {
@@ -28,6 +29,7 @@ export default async function (job: Job, cb: DoneCallback) {
       );
 
       const resp = await dataSourceUtils.getTransfersByAccount({
+        blockchainTag: inputData.blockchainTag,
         limit: pageSize,
         offset: currentOffset,
         publicKey: inputData.publicKey,

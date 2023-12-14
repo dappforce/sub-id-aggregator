@@ -4,7 +4,17 @@ import { Injectable } from '@nestjs/common';
 export class CommonUtils {
   constructor() {}
 
-  getStringShortcut(publicKey: string): string {
-    return publicKey.substring(publicKey.length - 6, publicKey.length - 1);
+  getStringEndingShortcut(str: string): string {
+    return str.substring(str.length - 6, str.length - 1);
+  }
+
+  getTransferId({
+    blockNumber,
+    eventIndex,
+  }: {
+    blockNumber: number;
+    eventIndex?: string | number;
+  }) {
+    return `${blockNumber}-${eventIndex}`;
   }
 }

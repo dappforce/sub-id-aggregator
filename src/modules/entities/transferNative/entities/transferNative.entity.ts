@@ -24,6 +24,13 @@ export class TransferNative {
   @Field(() => String)
   id: string;
 
+  @ManyToOne(() => Blockchain, (blockchain) => blockchain.id, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'blockchain_id' })
+  @Field(() => Blockchain, { nullable: false })
+  blockchain: Blockchain;
+
   @Column({ nullable: false, name: 'block_number' })
   @Field(() => Int, { nullable: false })
   blockNumber: number;
@@ -32,15 +39,23 @@ export class TransferNative {
   @Field(() => String, { nullable: true })
   extrinsicHash?: string;
 
+  @Column({ nullable: true, name: 'event_index' })
+  @Field(() => Int, { nullable: true })
+  eventIndex?: number;
+
   @Column({ type: 'timestamp with time zone', nullable: false })
   @Field(() => Date, { nullable: false })
   timestamp: Date;
 
-  @Column({ type: 'numeric', transformer: bigintTransformer, nullable: true })
+  @Column({ type: 'numeric', transformer: bigintTransformer, nullable: false })
   @Field(() => GraphQLBigInt, { nullable: false })
   amount: bigint;
 
-  @Column({ nullable: true })
+  @Column({ type: 'numeric', transformer: bigintTransformer, nullable: true })
+  @Field(() => GraphQLBigInt, { nullable: true })
+  fee?: bigint;
+
+  @Column({ nullable: false })
   @Field(() => Boolean, { nullable: false })
   success: boolean;
 
