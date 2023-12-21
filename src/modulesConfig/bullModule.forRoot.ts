@@ -37,6 +37,7 @@ export default {
 
       console.log('Redis client isCluster - ', client.isCluster);
       console.log('Redis client mode - ', client.mode);
+      
       client.on('connect', () => {
         console.log('Redis client connect');
       });
