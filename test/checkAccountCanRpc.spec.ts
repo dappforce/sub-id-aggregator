@@ -52,5 +52,5 @@ describe('Aggregator', () => {
     console.dir(resp, { depth: null });
 
     // expect(isValidRandomAddress).toEqual(false);
-  });
+  }, 60000);
 });

@@ -59,8 +59,8 @@ data:
   AGGREGATOR_REDIS_PREFIX: 'aggregator_queue_<BRANCH>'
   AGGREGATOR_REDIS_PORT: '6379'
   AGGREGATOR_REDIS_ENABLE_SSL: 'false'
-  AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: '60000'
-  AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE: '1000000'
+  AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: '120000'
+  AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE: '2000000'
 
   DATA_SOURCE__SUBSQUID__POLKADOT__TRANSFER: 'https://squid.subsquid.io/gs-main-polkadot/graphql'
   DATA_SOURCE__SUBSQUID__KUSAMA__TRANSFER: 'https://squid.subsquid.io/gs-main-kusama/graphql'
@@ -68,11 +68,11 @@ data:
   DATA_SOURCE__SUBSQUID__MOONRIVER__TRANSFER: 'https://squid.subsquid.io/gs-main-moonriver/graphql'
   DATA_SOURCE__SUBSQUID__ASTAR__TRANSFER: 'https://squid.subsquid.io/gs-main-astar/graphql'
 
-  DATA_SOURCE__SUBQUERY__POLKADOT__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-polkadot'
-  DATA_SOURCE__SUBQUERY__KUSAMA__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-kusama'
-  DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonbeam'
-  DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonriver'
-  DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar'
+  DATA_SOURCE__SUBQUERY__POLKADOT__TRANSFER: 'QmaKL376q6hmmsEAAeaFjKGDXJUjPp9qRPC1qjkNNUNomR'
+  DATA_SOURCE__SUBQUERY__KUSAMA__TRANSFER: 'QmPgkh7a5ziXfiHE11AMXBA5qkF2d3NdoNKKKeo68VeouC'
+  DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: 'QmSZNKPCNxAuiSjgDyTiK7VJBFdCcp8b11NzuUYvE7akEi'
+  DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: 'QmQnXCkFo9hhxLJHMBotCB2S8zhMR4tBkeiFHrLTBHjXja'
+  DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: 'QmZt47LXCtv9unSAaD9SbdEFfQQTLv9CTMHQKNKh2VDfwX'
 
   DATA_SOURCE_PROVIDER_TRANSFER: 'SUBQUERY'
 
