@@ -86,6 +86,10 @@ export class AggregationHelper {
         queryUrl: inputData.sourceUrl,
       });
 
+    console.log(
+      `${inputData.blockchainTag} indexer height - ${sourceIndexerStatus.height}`,
+    );
+
     let chunksRanges = this.getChunksRanges({
       latestProcessedBlock: inputData.latestProcessedBlock,
       totalBlocks: sourceIndexerStatus.height,
@@ -251,7 +255,11 @@ export class AggregationHelper {
     const pageSize = 1000;
     await runQuery();
     return {
-      fetchedChunkData: responseBuffer,
+      fetchedChunkData:
+        this.dataSourceUtils.getListWithoutDuplicates<TransferDecoratedDto>(
+          responseBuffer,
+          'id',
+        ),
     };
   }
 

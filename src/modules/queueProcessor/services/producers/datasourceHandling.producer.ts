@@ -33,20 +33,27 @@ export class DatasourceHandlingProducer {
           requestData.event,
           requestData,
           {
-            attempts: 20,
+            attempts: 5,
             jobId: this.getJobId(requestData),
-            removeOnComplete: true,
+            removeOnComplete: false,
             removeOnFail: false,
             priority: requestData.onDemand ? 1 : 2,
           },
         );
 
-        const jobResult = await job.finished();
+        // Watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
 
-        // TODO add result check
-        // TODO Add a watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
+        const intervalInst = setInterval(async () => {
+          const jobStatus = await job.getState();
 
-        resolve({ jobResult: JSON.parse(jobResult), requestData });
+          if (jobStatus === 'completed' || jobStatus === 'failed') {
+            clearInterval(intervalInst);
+            const jobRes = await this.datasourceHandlingQueue.getJob(job.id);
+            await jobRes.remove();
+            resolve({ jobResult: JSON.parse(jobRes.returnvalue), requestData });
+            return;
+          }
+        }, 500);
       },
     );
   }

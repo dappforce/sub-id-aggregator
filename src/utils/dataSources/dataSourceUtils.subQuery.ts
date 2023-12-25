@@ -13,14 +13,17 @@ import {
   GetTransfersByAccountSubQueryQueryVariables,
 } from '../graphQl/subQueryNova/subquery-nova-query';
 import { CryptoUtils } from '../cryptoUtils';
+import { deploymentHttpLink } from '@subql/apollo-links';
 
 // @Injectable()
 export class DataSourceUtilsSubQuery extends CommonDataSourceUtils {
   private cryptoUtils: CryptoUtils = new CryptoUtils();
 
   async getTransfersByAccount(data: GetTransfersByAccountArgs) {
-    const res = await this.requestWithRetry<GetTransfersByAccountSubQueryQuery>(
-      this.indexerQueryRequest<
+    let res = data.resultPlaceholder;
+
+    try {
+      res = await this.indexerQueryRequestApolloClient<
         GetTransfersByAccountSubQueryQuery,
         GetTransfersByAccountSubQueryQueryVariables
       >(
@@ -48,27 +51,46 @@ export class DataSourceUtilsSubQuery extends CommonDataSourceUtils {
           },
         },
         data.queryUrl,
-      ),
-      { retries: 5, everyMs: 1_500 },
-    );
+      );
+    } catch (e) {
+      console.log(e);
+    }
+
     return res;
   }
 
   async getIndexerLastProcessedHeight(data: GetIndexerLastProcessedHeightArgs) {
-    const res =
-      await this.requestWithRetry<GetIndexerLastProcessedHeightSubQueryQuery>(
-        this.indexerQueryRequest<
-          GetIndexerLastProcessedHeightSubQueryQuery,
-          {}
-        >(
-          {
-            document: GET_INDEXER_LAST_PROCESSED_HEIGHT,
-            variables: {},
-          },
-          data.queryUrl,
-        ),
-        { retries: 5, everyMs: 1_500 },
+    let res = data.resultPlaceholder;
+
+    try {
+      res = this.indexerQueryRequestApolloClient<
+        GetIndexerLastProcessedHeightSubQueryQuery,
+        {}
+      >(
+        {
+          document: GET_INDEXER_LAST_PROCESSED_HEIGHT,
+          variables: {},
+        },
+        data.queryUrl,
       );
+    } catch (e) {
+      console.log(e);
+    }
+
     return res;
+  }
+
+  getQueryEndpointApolloLinks(deploymentId: string) {
+    const options = {
+      authUrl: 'https://kepler-auth.subquery.network', // this is for testnet, use https://kepler-auth.subquery.network for kepler
+      deploymentId: deploymentId,
+      httpOptions: { fetchOptions: { timeout: 5000 } },
+      maxRetries: 30,
+      logger: console, // or any other custom logger
+    };
+
+    const { link, cleanup } = deploymentHttpLink(options);
+
+    return link;
   }
 }

@@ -24,6 +24,7 @@
     "codegen:subquery-nova-query": "graphql-codegen --require dotenv/config --config codegenConfig/codegen-subquery-nova-query.ts"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.8",
     "@apollo/server": "^4.7.2",
     "@bull-board/api": "^5.8.4",
     "@bull-board/express": "^5.8.4",
@@ -38,6 +39,7 @@
     "@nestjs/schedule": "^4.0.0",
     "@nestjs/typeorm": "^9.0.1",
     "@polkadot/util-crypto": "^12.4.2",
+    "@subql/apollo-links": "^1.2.5",
     "@subsocial/api": "^0.8.14",
     "@subsocial/utils": "^0.8.14",
     "@subsquid/openreader": "^3.1.7",

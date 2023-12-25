@@ -8,6 +8,8 @@ import {
   supportedBlockchainDetails,
 } from '../../../constants/blockchain';
 import { AppConfig } from '../../../config.module';
+import { DataSourceUtils } from '../../../utils/dataSources/dataSourceUtils';
+import { NativeTransactionKind } from '../../../constants/common';
 
 @Injectable()
 export class BlockchainService {
@@ -17,6 +19,7 @@ export class BlockchainService {
     @InjectRepository(Blockchain)
     public readonly blockchainRepository: Repository<Blockchain>,
     private appConfig: AppConfig,
+    private dataSourceUtils: DataSourceUtils,
   ) {
     this.setDataSourceEndpoints();
   }
@@ -27,14 +30,15 @@ export class BlockchainService {
 
       for (const eventName in chainConfig.events) {
         chainConfigUpdated.events[eventName] =
-          this.appConfig[
-            `DATA_SOURCE__${
-              this.appConfig[`DATA_SOURCE_PROVIDER_${eventName}`]
-            }__${chainConfig.tag}__${eventName}`
-          ];
+          this.dataSourceUtils.getQueryEndpoint(
+            chainConfig.tag,
+            eventName as NativeTransactionKind,
+          );
       }
       this.blockchainDataSourceConfigs.push(chainConfigUpdated);
     }
+
+    console.dir(this.blockchainDataSourceConfigs, { depth: null });
   }
 
   async getOrCreateBlockchain(blockchainId: string): Promise<Blockchain> {

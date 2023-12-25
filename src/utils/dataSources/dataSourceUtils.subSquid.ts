@@ -49,7 +49,7 @@ export class DataSourceUtilsSubSquid extends CommonDataSourceUtils {
             },
           },
         },
-        data.queryUrl,
+        data.queryUrl as string,
       ),
       { retries: 5, everyMs: 1_500 },
     );
@@ -87,7 +87,7 @@ export class DataSourceUtilsSubSquid extends CommonDataSourceUtils {
         document: GET_MAIN_SQUID_STATUS_SUBSQUID,
         variables: {},
       },
-      data.queryUrl,
+      data.queryUrl as string,
     );
     return res;
   }

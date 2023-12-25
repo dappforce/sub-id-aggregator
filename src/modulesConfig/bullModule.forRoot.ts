@@ -17,7 +17,6 @@ export default {
         ...(config.AGGREGATOR_REDIS_ENABLE_SSL
           ? { tls: {}, connectTimeout: 60_000 }
           : {}),
-
         retryStrategy: (times) => {
           if (times > 100) {
             console.log('Redis reconnect stopped. ');
@@ -31,6 +30,7 @@ export default {
 
       console.log('Redis client isCluster - ', client.isCluster);
       console.log('Redis client mode - ', client.mode);
+      
       client.on('connect', () => {
         console.log('Redis client connect');
       });

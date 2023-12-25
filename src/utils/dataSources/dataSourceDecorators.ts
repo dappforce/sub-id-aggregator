@@ -40,6 +40,10 @@ export class DataSourceDecorators {
     for (const node of queryResponse.historyElements.nodes) {
       const transferData = node.transfer as TransferDto;
       decoratedData.transfers.push({
+        id: this.commonUtils.getTransferId({
+          blockNumber: node.blockNumber,
+          eventIndex: transferData.eventIdx,
+        }),
         direction: this.getTransferDirection({
           from: transferData.from,
           to: transferData.to,
