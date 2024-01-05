@@ -11,7 +11,6 @@ export default {
     console.log('config.AGGREGATOR_REDIS_PASSWORD - ', config.AGGREGATOR_REDIS_PASSWORD)
     console.log('config.AGGREGATOR_REDIS_PREFIX - ', config.AGGREGATOR_REDIS_PREFIX)
 
-
     const getClient = () => {
       const client = new Redis({
         host: config.AGGREGATOR_REDIS_HOST,
