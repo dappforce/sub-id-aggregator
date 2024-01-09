@@ -52,7 +52,7 @@ export class AccountTransactionService {
   }: FindAccountTxHistoryArgs): Promise<[AccountTransaction[], number]> {
     return this.accountTransactionRepository.findAndCount({
       where: {
-        ownerPublicKey: this.cryptoUtils.addressToHex(publicKey),
+        ownerPublicKey: this.cryptoUtils.addressToHexIfNotHex(publicKey),
         ...(blockchainTag ? { blockchainTag: In(blockchainTag) } : {}),
         ...(txKind ? { txKind: In(txKind) } : {}),
       },

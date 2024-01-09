@@ -56,7 +56,7 @@ export class AccountSyncSchedulerService {
   }: {
     publicKey: string;
   }) {
-    const decoratedPublicKey = this.cryptoUtils.addressToHex(publicKey);
+    const decoratedPublicKey = this.cryptoUtils.addressToHexIfNotHex(publicKey);
     const subscriptionData = await this.getOrCreateHistoryUpdateSubEntity(
       decoratedPublicKey,
     );

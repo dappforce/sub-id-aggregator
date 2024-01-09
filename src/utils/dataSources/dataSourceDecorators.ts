@@ -62,9 +62,9 @@ export class DataSourceDecorators {
           success: transferData.success,
           timestamp: +node.timestamp * 1000,
           from: {
-            publicKey: this.cryptoUtils.addressToHex(transferData.from),
+            publicKey: this.cryptoUtils.addressToHexIfNotHex(transferData.from),
           },
-          to: { publicKey: this.cryptoUtils.addressToHex(transferData.to) },
+          to: { publicKey: this.cryptoUtils.addressToHexIfNotHex(transferData.to) },
         },
       });
     }

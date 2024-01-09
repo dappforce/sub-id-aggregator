@@ -24,7 +24,7 @@ export class DataAggregatorService {
     const data: RefreshAccountTxHistoryJobDataDto = job.data;
     // TODO add management of top level request from client
 
-    const publicKeyDecorated = this.cryptoUtils.addressToHex(data.publicKey);
+    const publicKeyDecorated = this.cryptoUtils.addressToHexIfNotHex(data.publicKey);
     const txAccount = await this.accountService.getOrCreateAccount(
       publicKeyDecorated,
     );
