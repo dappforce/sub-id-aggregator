@@ -35,7 +35,6 @@ export class DataAggregatorService {
         .map((chainData) => {
           const chainEvents: CollectEventDataFromDataSourceInput[] = [];
           for (const eventName in chainData.events) {
-            console.log(chainData.events[eventName])
             chainEvents.push({
               event: eventName as NativeTransactionKind,
               publicKey: publicKeyDecorated,

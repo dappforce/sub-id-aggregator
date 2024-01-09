@@ -30,7 +30,6 @@ export class CryptoUtils {
   }
 
   publicKeyToFormattedAddress(publicKey: string, blockchainTag: BlockchainTag) {
-    console.log('publicKeyToFormattedAddress - ', publicKey);
     if (this.isValidEvmAddress(publicKey)) return publicKey;
     return encodeAddress(
       decodeAddress(publicKey),
@@ -39,7 +38,6 @@ export class CryptoUtils {
   }
 
   decoratePublicKey(publicKey: string) {
-    console.log('publicKeyToFormattedAddress - ', publicKey);
     if (this.isValidEvmAddress(publicKey)) return publicKey.toLowerCase();
     return publicKey;
   }
