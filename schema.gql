@@ -20,6 +20,7 @@ enum BlockchainTag {
   MOONBEAM
   MOONRIVER
   ASTAR
+  SUBSOCIAL
 }
 
 type TransferNative {

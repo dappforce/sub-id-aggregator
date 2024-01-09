@@ -90,6 +90,9 @@ export class AppConfig {
 
   @IsNotEmpty()
   readonly DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: string;
+
+  @IsNotEmpty()
+  readonly DATA_SOURCE__SUBQUERY__SUBSOCIAL__TRANSFER: string;
 }
 
 @Global()

@@ -73,6 +73,7 @@ data:
   DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonbeam'
   DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonriver'
   DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar'
+  DATA_SOURCE__SUBQUERY__SUBSOCIAL__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-subsocial'
 
   DATA_SOURCE_PROVIDER_TRANSFER: 'SUBQUERY'
 

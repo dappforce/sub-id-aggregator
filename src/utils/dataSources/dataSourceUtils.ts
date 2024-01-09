@@ -38,7 +38,7 @@ export class DataSourceUtils extends DataSourceDecorators {
         return this.decorateGetTransfersByAccountResponseFromSubQuery(
           await this.subsQuery.getTransfersByAccount({
             ...data,
-            queryUrl: this.decorateQueryUrl(data.queryUrl as string),
+            // queryUrl: this.decorateQueryUrl(data.queryUrl as string), // TODO disabled Kepler links generation
             resultPlaceholder: { historyElements: { nodes: [] } },
           }),
         );
@@ -64,7 +64,7 @@ export class DataSourceUtils extends DataSourceDecorators {
         return this.decorateGetIndexerLastProcessedHeightFromSubQuery(
           await this.subsQuery.getIndexerLastProcessedHeight({
             ...data,
-            queryUrl: this.decorateQueryUrl(data.queryUrl as string),
+            // queryUrl: this.decorateQueryUrl(data.queryUrl as string),  // TODO disabled Kepler links generation
             resultPlaceholder: { _metadata: { lastProcessedHeight: 0 } },
           }),
         );
