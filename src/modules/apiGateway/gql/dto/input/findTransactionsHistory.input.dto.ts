@@ -18,6 +18,9 @@ export class FindAccountTxHistoryWhereParams {
 
   @Field(() => [TransactionKind!], { nullable: true })
   txKind?: TransactionKind[];
+
+  @Field(() => Boolean, { nullable: true, defaultValue: true })
+  success?: boolean;
 }
 
 @InputType()

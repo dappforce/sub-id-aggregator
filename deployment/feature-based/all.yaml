@@ -67,12 +67,13 @@ data:
   DATA_SOURCE__SUBSQUID__MOONBEAM__TRANSFER: 'https://squid.subsquid.io/gs-main-moonbeam/graphql'
   DATA_SOURCE__SUBSQUID__MOONRIVER__TRANSFER: 'https://squid.subsquid.io/gs-main-moonriver/graphql'
   DATA_SOURCE__SUBSQUID__ASTAR__TRANSFER: 'https://squid.subsquid.io/gs-main-astar/graphql'
+  DATA_SOURCE__SUBSQUID__SUBSOCIAL__TRANSFER: 'https://squid.subsquid.io/gs-main-astar/graphql'
 
-  DATA_SOURCE__SUBQUERY__POLKADOT__TRANSFER: 'https://kepler-auth.subquery.network/query/QmaKL376q6hmmsEAAeaFjKGDXJUjPp9qRPC1qjkNNUNomR'
-  DATA_SOURCE__SUBQUERY__KUSAMA__TRANSFER: 'https://kepler-auth.subquery.network/query/QmPgkh7a5ziXfiHE11AMXBA5qkF2d3NdoNKKKeo68VeouC'
-  DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: 'https://kepler-auth.subquery.network/query/QmSZNKPCNxAuiSjgDyTiK7VJBFdCcp8b11NzuUYvE7akEi'
-  DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: 'https://kepler-auth.subquery.network/query/QmQnXCkFo9hhxLJHMBotCB2S8zhMR4tBkeiFHrLTBHjXja'
-  DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: 'https://kepler-auth.subquery.network/query/QmZt47LXCtv9unSAaD9SbdEFfQQTLv9CTMHQKNKh2VDfwX'
+  DATA_SOURCE__SUBQUERY__POLKADOT__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-polkadot'
+  DATA_SOURCE__SUBQUERY__KUSAMA__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-kusama'
+  DATA_SOURCE__SUBQUERY__MOONBEAM__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonbeam'
+  DATA_SOURCE__SUBQUERY__MOONRIVER__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-moonriver'
+  DATA_SOURCE__SUBQUERY__ASTAR__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-astar'
   DATA_SOURCE__SUBQUERY__SUBSOCIAL__TRANSFER: 'https://api.subquery.network/sq/nova-wallet/nova-wallet-subsocial'
 
   DATA_SOURCE_PROVIDER_TRANSFER: 'SUBQUERY'
