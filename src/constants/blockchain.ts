@@ -9,7 +9,6 @@ export enum BlockchainTag {
   ASTAR = 'ASTAR',
   SUBSOCIAL = 'SUBSOCIAL',
 }
-
 // https://github.com/polkadot-js/apps/blob/7c12692ee34aadd815b282ff4dca3d0a4763a9ca/packages/apps-config/src/endpoints/productionRelayPolkadot.ts#L645
 
 // https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
