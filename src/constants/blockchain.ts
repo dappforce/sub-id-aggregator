@@ -9,7 +9,6 @@ export enum BlockchainTag {
   ASTAR = 'ASTAR',
   SUBSOCIAL = 'SUBSOCIAL',
 }
-
 // https://github.com/polkadot-js/apps/blob/7c12692ee34aadd815b282ff4dca3d0a4763a9ca/packages/apps-config/src/endpoints/productionRelayPolkadot.ts#L645
 
 // https://github.com/paritytech/ss58-registry/blob/main/ss58-registry.json
@@ -78,41 +77,41 @@ export const supportedBlockchainDetails: Omit<Blockchain, 'id'>[] = [
 ];
 
 export const blockchainDataSourceConfigs = [
-  {
-    tag: BlockchainTag.POLKADOT,
-    events: {
-      [NativeTransactionKind.TRANSFER]: null,
-      // [NativeTransactionKind.REWARD]: null,
-    },
-  },
-  {
-    tag: BlockchainTag.KUSAMA,
-    events: {
-      [NativeTransactionKind.TRANSFER]: null,
-      // [NativeTransactionKind.REWARD]: null,
-    },
-  },
-  {
-    tag: BlockchainTag.MOONBEAM,
-    events: {
-      [NativeTransactionKind.TRANSFER]: null,
-      // [NativeTransactionKind.REWARD]: null,
-    },
-  },
-  {
-    tag: BlockchainTag.MOONRIVER,
-    events: {
-      [NativeTransactionKind.TRANSFER]: null,
-      // [NativeTransactionKind.REWARD]: null,
-    },
-  },
-  {
-    tag: BlockchainTag.ASTAR,
-    events: {
-      [NativeTransactionKind.TRANSFER]: null,
-      // [NativeTransactionKind.REWARD]: null,
-    },
-  },
+  // {
+  //   tag: BlockchainTag.POLKADOT,
+  //   events: {
+  //     [NativeTransactionKind.TRANSFER]: null,
+  //     // [NativeTransactionKind.REWARD]: null,
+  //   },
+  // },
+  // {
+  //   tag: BlockchainTag.KUSAMA,
+  //   events: {
+  //     [NativeTransactionKind.TRANSFER]: null,
+  //     // [NativeTransactionKind.REWARD]: null,
+  //   },
+  // },
+  // {
+  //   tag: BlockchainTag.MOONBEAM,
+  //   events: {
+  //     [NativeTransactionKind.TRANSFER]: null,
+  //     // [NativeTransactionKind.REWARD]: null,
+  //   },
+  // },
+  // {
+  //   tag: BlockchainTag.MOONRIVER,
+  //   events: {
+  //     [NativeTransactionKind.TRANSFER]: null,
+  //     // [NativeTransactionKind.REWARD]: null,
+  //   },
+  // },
+  // {
+  //   tag: BlockchainTag.ASTAR,
+  //   events: {
+  //     [NativeTransactionKind.TRANSFER]: null,
+  //     // [NativeTransactionKind.REWARD]: null,
+  //   },
+  // },
   {
     tag: BlockchainTag.SUBSOCIAL,
     events: {
