@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
-import { u8aToHex, isHex, hexToU8a } from '@polkadot/util';
+import { u8aToHex, u8aToString, isHex, hexToU8a } from '@polkadot/util';
 import { ethers } from 'ethers';
 import {
   BlockchainTag,
@@ -19,11 +19,27 @@ export class CryptoUtils {
     return u8aToHex(publicKey);
   }
 
+  addressToHexIfNotHex(address: string | Uint8Array) {
+    if (
+      this.isValidEvmAddress(
+        typeof address === 'string' ? address : u8aToString(address),
+      )
+    )
+      return typeof address === 'string' ? address : u8aToString(address);
+    return this.addressToHex(address);
+  }
+
   publicKeyToFormattedAddress(publicKey: string, blockchainTag: BlockchainTag) {
+    if (this.isValidEvmAddress(publicKey)) return publicKey;
     return encodeAddress(
       decodeAddress(publicKey),
       this.supportedBlockchainDetailsMap.get(blockchainTag).prefix,
     );
+  }
+
+  decoratePublicKey(publicKey: string) {
+    if (this.isValidEvmAddress(publicKey)) return publicKey.toLowerCase();
+    return publicKey;
   }
 
   isValidAddress(maybeAddress: string) {

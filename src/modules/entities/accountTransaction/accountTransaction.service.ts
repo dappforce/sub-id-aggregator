@@ -44,7 +44,7 @@ export class AccountTransactionService {
   }
 
   async findAccountTxHistory({
-    where: { publicKey, blockchainTag, txKind },
+    where: { publicKey, blockchainTag, txKind, success },
     orderDirection,
     orderBy,
     pageSize,
@@ -52,7 +52,8 @@ export class AccountTransactionService {
   }: FindAccountTxHistoryArgs): Promise<[AccountTransaction[], number]> {
     return this.accountTransactionRepository.findAndCount({
       where: {
-        ownerPublicKey: this.cryptoUtils.addressToHex(publicKey),
+        ownerPublicKey: this.cryptoUtils.addressToHexIfNotHex(publicKey),
+        success,
         ...(blockchainTag ? { blockchainTag: In(blockchainTag) } : {}),
         ...(txKind ? { txKind: In(txKind) } : {}),
       },

@@ -28,7 +28,7 @@ export class AccountAggregationFlowProducer {
 
   async enqueueTask(args: EnqueueAccountAggregationJobInput) {
     const taskPayload: RefreshAccountTxHistoryJobDataDto = {
-      publicKey: this.cryptoUtils.addressToHex(args.publicKey),
+      publicKey: this.cryptoUtils.addressToHexIfNotHex(args.publicKey),
     };
 
     console.log(args);

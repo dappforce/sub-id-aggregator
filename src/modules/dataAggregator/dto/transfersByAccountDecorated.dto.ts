@@ -1,6 +1,7 @@
 import { TransferDirection } from '../../../constants/common';
 
 export type TransferDecoratedDto = {
+  id: string;
   direction?: TransferDirection | null;
   transfer?: {
     id: string;

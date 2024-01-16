@@ -1,4 +1,13 @@
 import { GraphQLClient, RequestOptions, Variables } from 'graphql-request';
+import {
+  ApolloClient,
+  ApolloLink,
+  ApolloQueryResult,
+  InMemoryCache,
+} from '@apollo/client/core';
+import { ApolloClientOptions } from '@apollo/client/core/ApolloClient';
+import { OperationVariables } from '@apollo/client/core/types';
+import type { DocumentNode } from 'graphql';
 
 export class CommonDataSourceUtils {
   constructor() {}
@@ -37,4 +46,43 @@ export class CommonDataSourceUtils {
     });
     return client.request({ queryUrl, ...config });
   }
+
+  async indexerQueryRequestApolloClient<
+    T,
+    V extends OperationVariables = OperationVariables,
+  >(
+    config: { variables: V; document: DocumentNode },
+    queryUrl: string | ApolloLink,
+  ): Promise<T> {
+    if (!queryUrl) throw new Error('queryUrlOrLinks is not provided');
+
+    const options: ApolloClientOptions<any> = {
+      cache: new InMemoryCache(),
+      defaultOptions: {
+        watchQuery: {
+          fetchPolicy: 'no-cache',
+        },
+        query: {
+          fetchPolicy: 'no-cache',
+        },
+      },
+    };
+
+    if (typeof queryUrl === 'string') {
+      options.uri = queryUrl;
+    } else {
+      options.link = queryUrl;
+    }
+
+    const client = new ApolloClient(options);
+
+    return (
+      await client.query<T, V>({
+        query: config.document,
+        variables: config.variables,
+        fetchPolicy: 'no-cache',
+      })
+    ).data;
+  }
+
 }

@@ -20,6 +20,7 @@ enum BlockchainTag {
   MOONBEAM
   MOONRIVER
   ASTAR
+  SUBSOCIAL
 }
 
 type TransferNative {
@@ -133,6 +134,7 @@ input FindAccountTxHistoryWhereParams {
   publicKey: String
   blockchainTag: [BlockchainTag!]
   txKind: [TransactionKind!]
+  success: Boolean = true
 }
 
 enum FindAccountTxHistoryOrderBy {

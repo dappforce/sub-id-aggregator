@@ -40,6 +40,10 @@ export class DataSourceDecorators {
     for (const node of queryResponse.historyElements.nodes) {
       const transferData = node.transfer as TransferDto;
       decoratedData.transfers.push({
+        id: this.commonUtils.getTransferId({
+          blockNumber: node.blockNumber,
+          eventIndex: transferData.eventIdx,
+        }),
         direction: this.getTransferDirection({
           from: transferData.from,
           to: transferData.to,
@@ -58,9 +62,9 @@ export class DataSourceDecorators {
           success: transferData.success,
           timestamp: +node.timestamp * 1000,
           from: {
-            publicKey: this.cryptoUtils.addressToHex(transferData.from),
+            publicKey: this.cryptoUtils.addressToHexIfNotHex(transferData.from),
           },
-          to: { publicKey: this.cryptoUtils.addressToHex(transferData.to) },
+          to: { publicKey: this.cryptoUtils.addressToHexIfNotHex(transferData.to) },
         },
       });
     }

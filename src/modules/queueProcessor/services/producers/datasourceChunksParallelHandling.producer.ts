@@ -25,20 +25,30 @@ export class DatasourceChunksParallelHandlingProducer {
           'TRANSFER_CHUNK',
           requestData,
           {
-            attempts: 5,
+            attempts: 3,
             timeout: 60 * 1000,
             jobId: crypto.randomUUID(),
-            removeOnComplete: true,
+            removeOnComplete: false,
             removeOnFail: false,
             stackTraceLimit: 100,
             priority: requestData.onDemand ? 1 : 2,
           },
         );
 
-        const jobResult = await job.finished();
-        // TODO add result check
-        // TODO Add a watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
-        resolve({ jobResult: JSON.parse(jobResult) });
+        // Watchdog to check if the job has finished periodically. Since pubsub does not give any guarantees.
+
+        const intervalInst = setInterval(async () => {
+          const jobStatus = await job.getState();
+
+          if (jobStatus === 'completed' || jobStatus === 'failed') {
+            clearInterval(intervalInst);
+            const jobRes =
+              await this.datasourceChunksParallelHandlingQueue.getJob(job.id);
+            await jobRes.remove();
+            resolve({ jobResult: JSON.parse(jobRes.returnvalue) });
+            return;
+          }
+        }, 500);
       } catch (e) {
         reject(e);
       }
