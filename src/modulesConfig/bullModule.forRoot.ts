@@ -5,12 +5,6 @@ import { SharedBullAsyncConfiguration } from '@nestjs/bull/dist/interfaces';
 export default {
   inject: [AppConfig],
   useFactory: (config: AppConfig) => {
-
-    console.log('config.AGGREGATOR_REDIS_HOST - ', config.AGGREGATOR_REDIS_HOST)
-    console.log('config.AGGREGATOR_REDIS_PORT - ', config.AGGREGATOR_REDIS_PORT)
-    console.log('config.AGGREGATOR_REDIS_PASSWORD - ', config.AGGREGATOR_REDIS_PASSWORD)
-    console.log('config.AGGREGATOR_REDIS_PREFIX - ', config.AGGREGATOR_REDIS_PREFIX)
-
     const getClient = () => {
       const client = new Redis({
         host: config.AGGREGATOR_REDIS_HOST,
@@ -23,6 +17,7 @@ export default {
         ...(config.AGGREGATOR_REDIS_ENABLE_SSL
           ? { tls: {}, connectTimeout: 60_000 }
           : {}),
+
         retryStrategy: (times) => {
           if (times > 100) {
             console.log('Redis reconnect stopped. ');
@@ -36,7 +31,6 @@ export default {
 
       console.log('Redis client isCluster - ', client.isCluster);
       console.log('Redis client mode - ', client.mode);
-      
       client.on('connect', () => {
         console.log('Redis client connect');
       });
