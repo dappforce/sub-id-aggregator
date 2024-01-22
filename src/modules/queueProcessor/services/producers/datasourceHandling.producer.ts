@@ -12,6 +12,8 @@ import { CollectEventDataFromDataSourceResponse } from '../../dto/collectEventDa
 import { CollectEventDataHandlerResponse } from '../../../dataAggregator/dto/collectEventDataHandler.response';
 import { CollectEventDataChunkFromDataSourceInput } from '../../dto/collectEventDataChunkFromDataSource.input';
 import { CollectTransfersChunkHandlerResponseResponse } from '../../../dataAggregator/dto/collectTransfersChunkHandlerResponse.response';
+import { NativeTransactionKind } from '../../../../constants/common';
+import { BlockchainTag } from '../../../../constants/blockchain';
 
 @Injectable()
 export class DatasourceHandlingProducer {
@@ -49,6 +51,17 @@ export class DatasourceHandlingProducer {
           if (jobStatus === 'completed' || jobStatus === 'failed') {
             clearInterval(intervalInst);
             const jobRes = await this.datasourceHandlingQueue.getJob(job.id);
+
+            if (!jobRes) {
+              resolve({
+                jobResult: {
+                  latestProcessedBlock: requestData.latestProcessedBlock,
+                  action: requestData.event,
+                  blockchainTag: requestData.blockchainTag,
+                },
+                requestData,
+              });
+            }
             await jobRes.remove();
             resolve({ jobResult: JSON.parse(jobRes.returnvalue), requestData });
             return;

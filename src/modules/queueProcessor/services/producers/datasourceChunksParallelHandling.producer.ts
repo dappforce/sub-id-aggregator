@@ -44,6 +44,10 @@ export class DatasourceChunksParallelHandlingProducer {
             clearInterval(intervalInst);
             const jobRes =
               await this.datasourceChunksParallelHandlingQueue.getJob(job.id);
+            if (!jobRes) {
+              resolve({ jobResult: { fetchedChunkData: [] } });
+              return;
+            }
             await jobRes.remove();
             resolve({ jobResult: JSON.parse(jobRes.returnvalue) });
             return;
