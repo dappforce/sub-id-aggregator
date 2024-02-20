@@ -72,7 +72,8 @@ export class AccountSyncSchedulerService {
         priority: 2,
         repeat: {
           every: this.appConfig.AGGREGATOR_HISTORY_RENEW_INTERVAL_MS,
-          limit: 120_960, // 7 days with interval 5 sec
+          limit: 864, // 3 days with interval 5 min
+          // limit: 120_960, // 7 days with interval 5 sec
         },
       },
     });
