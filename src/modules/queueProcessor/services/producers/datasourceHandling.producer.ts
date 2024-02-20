@@ -70,6 +70,14 @@ export class DatasourceHandlingProducer {
       },
     );
   }
+  async removeAllActiveJobs() {
+    const allJobs = await this.datasourceHandlingQueue.getJobs(['active']);
+
+    for (const job of allJobs) {
+      await job.remove();
+    }
+  }
+
   //
   // async enqueueAndWaitCollectTransferEventDataChunkJobProducer(
   //   requestData: CollectEventDataChunkFromDataSourceInput,

@@ -58,4 +58,14 @@ export class DatasourceChunksParallelHandlingProducer {
       }
     });
   }
+
+  async removeAllActiveJobs() {
+    const allJobs = await this.datasourceChunksParallelHandlingQueue.getJobs([
+      'active',
+    ]);
+
+    for (const job of allJobs) {
+      await job.remove();
+    }
+  }
 }

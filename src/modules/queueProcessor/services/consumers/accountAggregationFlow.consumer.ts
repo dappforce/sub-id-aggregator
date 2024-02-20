@@ -62,9 +62,9 @@ export class AccountAggregationFlowConsumer {
       await this.dataAggregatorService.handleRefreshAccountTransactionsHistory(
         job,
       );
-      console.log(
-        'REFRESH_TX_HISTORY_FOR_ACCOUNT_SCHEDULED:: handleRefreshAccountTransactionsHistory completed',
-      );
+      // console.log(
+      //   'REFRESH_TX_HISTORY_FOR_ACCOUNT_SCHEDULED:: handleRefreshAccountTransactionsHistory completed',
+      // );
 
       await job.releaseLock();
       await job.moveToCompleted('done', true);

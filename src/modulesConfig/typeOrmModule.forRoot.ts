@@ -7,6 +7,7 @@ import { RewardNative } from '../modules/entities/rewardNative/entities/rewardNa
 import { Transaction } from '../modules/entities/transaction/entities/transaction.entity';
 import { TransferNative } from '../modules/entities/transferNative/entities/transferNative.entity';
 import { VoteNative } from '../modules/entities/voteNative/entities/voteNative.entity';
+import { AggregatorState } from '../modules/aggregatorStateManager/entities/aggregatorState.entity';
 
 export default {
   inject: [AppConfig],
@@ -47,6 +48,7 @@ export default {
         Transaction,
         TransferNative,
         VoteNative,
+        AggregatorState,
       ],
     };
   },

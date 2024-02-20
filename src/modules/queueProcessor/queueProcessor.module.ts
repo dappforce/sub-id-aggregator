@@ -26,6 +26,7 @@ import { HistoryUpdateSubscription } from '../accountSyncScheduler/entities/hist
 import { DatasourceChunksParallelHandlingProducer } from './services/producers/datasourceChunksParallelHandling.producer';
 import { join } from 'path';
 import { DatasourceChunkParallelHandlingConsumer } from './services/consumers/datasourceChunkParallelHandling.consumer';
+import { registerBullQueues } from '../../modulesConfig/bullModule.forRoot';
 
 @Module({
   imports: [
@@ -38,27 +39,7 @@ import { DatasourceChunkParallelHandlingConsumer } from './services/consumers/da
       AccountTransaction,
       HistoryUpdateSubscription,
     ]),
-    BullModule.registerQueue(
-      {
-        name: SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW,
-      },
-      {
-        name: SubIdAggregatorQueueName.DATASOURCE_HANDLING,
-      },
-      {
-        name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
-        // processors: [
-        //   {
-        //     concurrency: 101,
-        //     name: 'TRANSFER_CHUNK',
-        //     path: join(
-        //       __dirname,
-        //       'services/workers/collectTransfersDataChunk.worker.js',
-        //     ),
-        //   },
-        // ],
-      },
-    ),
+    registerBullQueues(),
     BullBoardModule.forFeature(
       {
         name: SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW,

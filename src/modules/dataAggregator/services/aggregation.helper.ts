@@ -230,9 +230,9 @@ export class AggregationHelper {
 
     const runQuery = async (offset: number = 0) => {
       const currentOffset = offset;
-      console.log(
-        `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
-      );
+      // console.log(
+      //   `${pubicKeyShort} :: query START :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} :: offset ${currentOffset}`,
+      // );
 
       const resp = await this.dataSourceUtils.getTransfersByAccount({
         blockchainTag: inputData.blockchainTag,
@@ -243,9 +243,9 @@ export class AggregationHelper {
         blockNumber_lt: inputData.chunkEndBlock,
         queryUrl: inputData.sourceUrl,
       });
-      console.log(
-        `${pubicKeyShort} :: query COMPLETED :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} `,
-      );
+      // console.log(
+      //   `${pubicKeyShort} :: query COMPLETED :: ${inputData.blockchainTag} :: ${inputData.chunkStartBlock}/${inputData.chunkEndBlock} `,
+      // );
       if (resp.transfers.length === 0) return;
       responseBuffer.push(...resp.transfers);
 

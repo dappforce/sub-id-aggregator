@@ -1,6 +1,8 @@
 import { AppConfig } from '../config.module';
 import { Redis } from 'ioredis';
 import { SharedBullAsyncConfiguration } from '@nestjs/bull/dist/interfaces';
+import { SubIdAggregatorQueueName } from '../constants/queues';
+import { BullModule } from '@nestjs/bull';
 
 export default {
   inject: [AppConfig],
@@ -69,3 +71,17 @@ export default {
     };
   },
 } as SharedBullAsyncConfiguration;
+
+export function registerBullQueues() {
+  return BullModule.registerQueue(
+    {
+      name: SubIdAggregatorQueueName.ACCOUNT_AGGREGATION_FLOW,
+    },
+    {
+      name: SubIdAggregatorQueueName.DATASOURCE_HANDLING,
+    },
+    {
+      name: SubIdAggregatorQueueName.DATASOURCE_CHUNKS_PARALLEL_HANDLING,
+    },
+  );
+}

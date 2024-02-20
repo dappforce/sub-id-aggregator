@@ -58,4 +58,12 @@ export class AccountAggregationFlowProducer {
 
     return job;
   }
+
+  async removeAllActiveJobs() {
+    const allJobs = await this.accountAggregationFlowQueue.getJobs(['active']);
+
+    for (const job of allJobs) {
+      await job.remove();
+    }
+  }
 }

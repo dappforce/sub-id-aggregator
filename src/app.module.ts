@@ -23,6 +23,7 @@ import config from './modulesConfig';
 import { PlatformBootstrapperModule } from './platformBootstrapper/platformBootstrapper.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AccountSyncSchedulerModule } from './modules/accountSyncScheduler/accountSyncScheduler.module';
+import { AggregatorStateManagerModule } from './modules/aggregatorStateManager/aggregatorStateManager.module';
 
 dotenv.config();
 
@@ -50,10 +51,10 @@ dotenv.config();
     TransferNativeModule,
     VoteNativeModule,
     PlatformBootstrapperModule,
-    AccountSyncSchedulerModule
+    AccountSyncSchedulerModule,
+    AggregatorStateManagerModule,
   ],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(ApiToggleMiddleware).forRoutes('*');
