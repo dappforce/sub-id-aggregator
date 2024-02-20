@@ -19,7 +19,7 @@ export class AccountAggregationFlowConsumer {
 
   @Process({
     name: SubIdAggregatorJobName.REFRESH_TX_HISTORY_FOR_ACCOUNT_ON_DEMAND,
-    concurrency: 300,
+    concurrency: 100,
   })
   async refreshTxHistory(job: Job<RefreshAccountTxHistoryJobDataDto>) {
     await job.takeLock();
@@ -53,7 +53,7 @@ export class AccountAggregationFlowConsumer {
 
   @Process({
     name: SubIdAggregatorJobName.REFRESH_TX_HISTORY_FOR_ACCOUNT_SCHEDULED,
-    concurrency: 300,
+    concurrency: 100,
   })
   async refreshTxHistoryScheduled(job: Job<RefreshAccountTxHistoryJobDataDto>) {
     await job.takeLock();
