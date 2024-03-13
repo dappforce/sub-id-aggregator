@@ -41,7 +41,7 @@ export class CommonDataSourceUtils {
 
     const TIMEOUT = 2 * 60 * 1000;
     const client = new GraphQLClient(queryUrl, {
-      timeout: TIMEOUT,
+      // timeout: TIMEOUT,
       ...config,
     });
     return client.request({ queryUrl, ...config });
