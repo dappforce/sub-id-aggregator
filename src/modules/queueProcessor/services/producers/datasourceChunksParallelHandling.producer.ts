@@ -65,7 +65,11 @@ export class DatasourceChunksParallelHandlingProducer {
     ]);
 
     for (const job of allJobs) {
-      await job.remove();
+      try {
+        await job.remove();
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 }
