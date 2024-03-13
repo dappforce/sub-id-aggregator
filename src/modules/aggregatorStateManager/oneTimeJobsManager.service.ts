@@ -12,8 +12,8 @@ type OneTimeJob = { id: string; action: string } & {
 
 const oneTimeJobsList: OneTimeJob[] = [
   {
-    id: '1707177600',
-    action: 'activeStakingHandleDailyAggregationJob',
+    id: '1710336390624',
+    action: 'removeAllActiveJobs',
     payload: {},
   },
 ];
@@ -60,7 +60,7 @@ export class OneTimeJobsManagerService {
       const jobDetails = migrationsMap.get(jobId);
 
       switch (jobDetails.action) {
-        case 'activeStakingHandleDailyAggregationJob': {
+        case 'removeAllActiveJobs': {
           try {
             await this.accountAggregationFlowProducer.removeAllActiveJobs();
             await this.datasourceChunksParallelHandlingProducer.removeAllActiveJobs();
