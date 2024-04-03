@@ -12,12 +12,12 @@ type OneTimeJob = { id: string; action: string } & {
 
 const oneTimeJobsList: OneTimeJob[] = [
   {
-    id: '1712148386341',
+    id: '1712157944560',
     action: 'removeAllActiveJobs',
     payload: {},
   },
   {
-    id: '1712148398499',
+    id: '1712157951485',
     action: 'redisBgrewriteaof',
     payload: {},
   },
