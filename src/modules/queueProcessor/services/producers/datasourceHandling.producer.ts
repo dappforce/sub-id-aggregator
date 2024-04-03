@@ -82,6 +82,17 @@ export class DatasourceHandlingProducer {
     }
   }
 
+  /**
+   * Command BGREWRITEAOF can be executed from any Redis DB connection client
+   * and it will have effect to global appendonly.aof file
+   */
+  async refreshRedisAofFile() {
+    await this.datasourceHandlingQueue.client.bgrewriteaof((err, result) => {
+      console.log(`bgrewriteaof :: err `, err);
+      console.log(`bgrewriteaof :: result `, result);
+    });
+  }
+
   //
   // async enqueueAndWaitCollectTransferEventDataChunkJobProducer(
   //   requestData: CollectEventDataChunkFromDataSourceInput,

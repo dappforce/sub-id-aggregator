@@ -12,8 +12,13 @@ type OneTimeJob = { id: string; action: string } & {
 
 const oneTimeJobsList: OneTimeJob[] = [
   {
-    id: '1710336390625',
+    id: '1712148386341',
     action: 'removeAllActiveJobs',
+    payload: {},
+  },
+  {
+    id: '1712148398499',
+    action: 'redisBgrewriteaof',
     payload: {},
   },
 ];
@@ -65,6 +70,22 @@ export class OneTimeJobsManagerService {
             await this.accountAggregationFlowProducer.removeAllActiveJobs();
             await this.datasourceChunksParallelHandlingProducer.removeAllActiveJobs();
             await this.datasourceHandlingProducer.removeAllActiveJobs();
+
+            processedJobs.push(jobId);
+            console.log(
+              `OneTime Jobs :: OneTime Job has been completed with details: [id: ${jobDetails.id} // action: ${jobDetails.action}]`,
+            );
+          } catch (e) {
+            console.log(
+              `OneTime Jobs :: OneTime Job ${jobId} has been processed with error.`,
+            );
+            console.log(e);
+          }
+          break;
+        }
+        case 'redisBgrewriteaof': {
+          try {
+            await this.datasourceHandlingProducer.refreshRedisAofFile();
 
             processedJobs.push(jobId);
             console.log(
