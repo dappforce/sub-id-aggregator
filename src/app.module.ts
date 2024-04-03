@@ -24,6 +24,7 @@ import { PlatformBootstrapperModule } from './platformBootstrapper/platformBoots
 import { ScheduleModule } from '@nestjs/schedule';
 import { AccountSyncSchedulerModule } from './modules/accountSyncScheduler/accountSyncScheduler.module';
 import { AggregatorStateManagerModule } from './modules/aggregatorStateManager/aggregatorStateManager.module';
+import { RedisManagerModule } from './modules/redisManagerModule/redisManager.module';
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ dotenv.config();
     PlatformBootstrapperModule,
     AccountSyncSchedulerModule,
     AggregatorStateManagerModule,
+    RedisManagerModule,
   ],
 })
 export class AppModule implements NestModule {

@@ -11,16 +11,16 @@ type OneTimeJob = { id: string; action: string } & {
 };
 
 const oneTimeJobsList: OneTimeJob[] = [
-  {
-    id: '1712157944560',
-    action: 'removeAllActiveJobs',
-    payload: {},
-  },
-  {
-    id: '1712157951485',
-    action: 'redisBgrewriteaof',
-    payload: {},
-  },
+  // {
+  //   id: '1712157944560',
+  //   action: 'removeAllActiveJobs',
+  //   payload: {},
+  // },
+  // {
+  //   id: '1712157951485',
+  //   action: 'redisBgrewriteaof',
+  //   payload: {},
+  // },
 ];
 
 @Injectable()
