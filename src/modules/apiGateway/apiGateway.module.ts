@@ -16,6 +16,7 @@ import { Transaction } from '../entities/transaction/entities/transaction.entity
 import { TransactionsHistoryResolver } from './gql/transactionsHistory.resolver';
 import { AccountAggregationFlowProducer } from '../queueProcessor/services/producers/accountAggregationFlow.producer';
 import { SubIdAggregatorQueueName } from '../../constants/queues';
+import { RestHealthcheckController } from './rest/healthcheck/restHealthcheck.controller';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SubIdAggregatorQueueName } from '../../constants/queues';
     TransactionsHistoryResolver,
     AccountAggregationFlowProducer,
   ],
+  controllers: [RestHealthcheckController],
   exports: [ApiGatewayService],
 })
 export class ApiGatewayModule {}

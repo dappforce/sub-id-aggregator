@@ -25,6 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AccountSyncSchedulerModule } from './modules/accountSyncScheduler/accountSyncScheduler.module';
 import { AggregatorStateManagerModule } from './modules/aggregatorStateManager/aggregatorStateManager.module';
 import { RedisManagerModule } from './modules/redisManagerModule/redisManager.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 dotenv.config();
 
@@ -40,6 +41,12 @@ dotenv.config();
     }),
     TypeOrmModule.forRootAsync(config.typeOrmModuleForRoot),
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 1000,
+        limit: 2,
+      },
+    ]),
     DependencyServiceModule,
     QueueProcessorModule,
     ApiGatewayModule,

@@ -37,6 +37,7 @@
     "@nestjs/graphql": "^11.0.6",
     "@nestjs/platform-express": "^9.4.2",
     "@nestjs/schedule": "^4.0.0",
+    "@nestjs/throttler": "^5.1.2",
     "@nestjs/typeorm": "^9.0.1",
     "@polkadot/util-crypto": "^12.4.2",
     "@subql/apollo-links": "^1.2.5",
