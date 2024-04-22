@@ -37,6 +37,10 @@ spec:
                 name: aggregation-env
             - secretRef:
                 name: aggregation-service-secret
+          resources:
+            requests:
+              memory: 1768Mi
+              cpu: 850m
       imagePullSecrets:
       - name: dockerhub
       restartPolicy: Always
