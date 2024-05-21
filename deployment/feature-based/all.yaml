@@ -55,9 +55,9 @@ metadata:
   namespace: sub-id
 data:
   AGGREGATOR_DB_DATABASE: 'aggregator_<BRANCH>-env'
-  AGGREGATOR_REDIS_HOST: 'redis-aggregation-<BRANCH>-master.default'
+  # AGGREGATOR_REDIS_HOST: 'redis-aggregation-<BRANCH>-master.default'
   AGGREGATOR_REDIS_PREFIX: 'aggregator_queue_<BRANCH>'
-  AGGREGATOR_REDIS_PORT: '6379'
+  # AGGREGATOR_REDIS_PORT: '6379'
   AGGREGATOR_REDIS_ENABLE_SSL: 'false'
   AGGREGATOR_HISTORY_RENEW_INTERVAL_MS: '300000'
   AGGREGATOR_GS_MAIN_CHUNK_BLOCKS_SIZE: '2000000'
